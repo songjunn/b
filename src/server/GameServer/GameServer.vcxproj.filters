@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="message">
+      <UniqueIdentifier>{901c533f-e1ff-4efe-b2e8-4976bccc79e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="template">
+      <UniqueIdentifier>{ae05b233-668c-49f9-9f1d-07d2e3600da4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="manager">
+      <UniqueIdentifier>{3916a3b6-206f-4de7-baed-c80b977dfc28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="obj">
+      <UniqueIdentifier>{8d79f684-a842-4736-8e3d-d88882447a07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="module">
+      <UniqueIdentifier>{e462778e-6c6b-426f-8732-f6ef43b47a78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lua">
+      <UniqueIdentifier>{b362609b-c438-498e-b097-059a8de4d1f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="unit">
+      <UniqueIdentifier>{06b6c083-6912-4e12-a244-6a8c5b8a3160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Event.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ItemTemplate.h">
+      <Filter>template</Filter>
+    </ClInclude>
+    <ClInclude Include="include\NameText.h">
+      <Filter>template</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RoleTemplate.h">
+      <Filter>template</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PlayerMgr.h">
+      <Filter>manager</Filter>
+    </ClInclude>
+    <ClInclude Include="include\UserMgr.h">
+      <Filter>manager</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Fighter.h">
+      <Filter>obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\IBaseObj.h">
+      <Filter>obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Item.h">
+      <Filter>obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Player.h">
+      <Filter>obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\User.h">
+      <Filter>obj</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DebugModule.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LoginModule.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="include\NoticeModule.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TimerModule.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LuaFuncDefine.h">
+      <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EventUnit.h">
+      <Filter>unit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\commdata.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\eventdef.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\ObjMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameServer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\attrs.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\attrs_defines.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\public\defines\gamedef.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DataModule.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ItemUnit.h">
+      <Filter>unit</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ItemMgr.h">
+      <Filter>manager</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HeroMgr.h">
+      <Filter>manager</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Hero.h">
+      <Filter>obj</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\NameText.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RoleTemplate.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+    <ClCompile Include="source\PlayerMgr.cpp">
+      <Filter>manager</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Fighter.cpp">
+      <Filter>obj</Filter>
+    </ClCompile>
+    <ClCompile Include="source\IBaseObj.cpp">
+      <Filter>obj</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Player.cpp">
+      <Filter>obj</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DebugModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="source\LoginModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="source\NoticeModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TimerModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="source\LuaCommon.cpp">
+      <Filter>lua</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EventUnit.cpp">
+      <Filter>unit</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Event.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="source\GameServer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="source\attrs.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DataModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ItemUnit.cpp">
+      <Filter>unit</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Item.cpp">
+      <Filter>obj</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ItemTemplate.cpp">
+      <Filter>template</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,52 @@
+﻿$def with(myHeroesArrays, selectType, playerValue, serverID)
+<!DOCTYPE html>
+<html>
+<head>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type = "text/javascript" src = "/static/js/GMWebQuery.js"></script>
+<script type = "text/javascript">
+
+$$(document).ready(function()
+{ 
+     $$("p#playerInfo").next("div.leftMenuBody").show();
+     $$("a#myHeroes").css("color","#AFEEEE");
+});
+</script>
+</head>
+    $def tr(myHeroesArrays):
+        $for myHeroesArray in myHeroesArrays:
+            $for i in range(len(myHeroesArray['heros'])):
+               <tr>
+               <td>$myHeroesArray['heros'][i]['heroid']</td>
+               <td>$myHeroesArray['heros'][i]['level']</td>
+               <td>$myHeroesArray['heros'][i]['fighting']</td>
+               <td>$myHeroesArray['heros'][i]['quality']</td>
+               <td>0</td>
+               <td>0</td>
+               </tr>
+
+    $ tableTitle = "%s%s%s%s%s"%("英雄基本信息(服务器:", confDic[serverID][0][1], ", 用户: ", playerValue, ")")
+    <body> 
+       $:render.base() 
+        <div class = contentView>
+            $:render.leftMenu(selectType, playerValue, serverID)
+          <div class = rightContentView>
+            $:render.rightContentOption()
+            <div>
+            <h2 class = rightTableTitle>$tableTitle</h2>
+            <table id = customers> 
+                 <tr>
+                 <th>英雄名称</th>
+                 <th>英雄等级</th>
+                 <th>英雄战力</th>
+                 <th>英雄品质</th>
+                 <th>英雄星等</th>
+                 <th>英雄特性</th>
+                 </tr>
+                 $:tr(myHeroesArrays)
+            </table>
+            </div>
+          </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,30 @@
+﻿$def with(serverID, playerListCursor)
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<script type = "text/javascript">
+
+        
+</script>
+</head>
+    $def playerListTable():
+        <table id = customers>
+            <tr>
+            <th width = "20"></th>
+            <th width = "120">角色ID</th>
+            <th width = "400">角色名称</th>
+            </tr>
+            $for playerInfo in playerListCursor:
+                <tr>
+                <td width = "20" align = "center"><input type = "checkbox" name = "checkbox0" value = "checkbox" /></td>
+                <td width = "120">$playerInfo['playerid']</td>
+                <td width = "400">$playerInfo['name']</td>
+                </tr>
+        </table>
+
+    <body> 
+         $:playerListTable()
+    </body>
+</html>

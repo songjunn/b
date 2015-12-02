@@ -1,0 +1,487 @@
+﻿$def with(serverID)
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<link rel="stylesheet" href="/static/css/jquery-ui-1.9.2.custom.css" type="text/css">
+<script type = "text/javascript" src = "/static/js/GMWebQuery.js"></script>
+<script type = "text/javascript" src="/static/js/jquery-1.8.3.js"></script>
+<script type = "text/javascript" src="/static/js/jquery-ui-1.9.2.custom.js"></script>
+<script type=  "text/javascript" src = "/static/js/dateTimejs/laydate.js"></script>
+<script src = "/static/js/Chart.js"></script>
+<script type = "text/javascript">
+
+function timeConfig(time){
+        var nowDate = new Date();
+        var nowDate1 = nowDate.getDate();
+        var nowMonth1 = nowDate.getMonth() + 1;
+        if(nowDate1 < 10)
+        {
+          nowDate1 = '0' + nowDate1
+        }
+        if(nowMonth1 < 10)
+        {
+          nowMonth1 = '0' +  nowMonth1;
+        }
+        timeStr = '—' + nowDate.getFullYear() + '-' + nowMonth1 + '-' + nowDate1;
+        nowDate.setDate(nowDate.getDate()+parseInt(time));
+        nowDate1 = nowDate.getDate();
+        nowMonth1 = nowDate.getMonth() + 1;
+        if(nowDate1 < 10)
+        {
+          nowDate1 = '0' + nowDate1
+        }
+        if(nowMonth1 < 10)
+        {
+          nowMonth1 = '0' + nowMonth1
+        }
+        var endDateStr = nowDate.getFullYear() + '-'+ nowMonth1 + '-' + nowDate1;
+        if(time == -1){
+            endDateStr += '—' + endDateStr;
+        }else{
+            endDateStr += timeStr;
+        }
+        return endDateStr;
+}; 
+
+function initDatePicker(){
+     var nowDate = new Date();
+     var nowDate1 = nowDate.getDate();
+     var nowMonth1 = nowDate.getMonth() + 1;
+        if(nowDate1 < 10)
+        {
+          nowDate1 = '0' + nowDate1
+        }
+        if(nowMonth1 < 10)
+        {
+          nowMonth1 = '0' +  nowMonth1;
+        }
+     timeStr = nowDate.getFullYear() + '-' + nowMonth1 + '-' + nowDate1;
+//     nowDate.setDate(nowDate.getDate()+parseInt(0));
+//     nowDate1 = nowDate.getDate();
+//     nowMonth1 = nowDate.getMonth() + 1;
+//        if(nowDate1 < 10)
+//        {
+//          nowDate1 = '0' + nowDate1
+//        }
+//        if(nowMonth1 < 10)
+//        {
+//          nowMonth1 = '0' + nowMonth1
+//        }
+//     var endDateStr = nowDate.getFullYear() + '-'+ nowMonth1 + '-' + nowDate1;
+     endDateStr = timeStr;
+     $$(".ui-datepicker-time").attr("value",endDateStr +"—"+ timeStr)
+     $$("#startDate").attr("value",endDateStr)
+     $$("#endDate").attr("value",timeStr)
+};
+
+(function($$){
+     $$.setStartTime = function(){
+        $$('.startDate').datepicker({
+            dateFormat: "yy/mm/dd",
+            maxDate: "+d",
+            onClose : function(dateText, inst) {
+                $$("#endDate" ).datepicker( "show" );
+            },
+            onSelect:function(dateText, inst) {
+                $$("#endDate" ).datepicker( "option","minDate",dateText );
+            },          
+        });
+        };
+})(jQuery);
+
+function JFormatDateTimepmz(strDate)
+{
+  var strPdate=strDate;
+  var iYear,iMonth,iDate,ihour,iminute,sec,sDate;
+  iYear=strPdate.getFullYear();
+  iMonth=strPdate.getMonth()+1;
+  iDate=strPdate.getDate();
+  ihour=strPdate.getHours();
+  iminute=strPdate.getMinutes();
+  sec = strPdate.getSeconds();
+  sDate=String(iYear);
+ 
+  if(iMonth < 10)
+  {
+    sDate = sDate + "-0" + String(iMonth); 
+  }
+  else
+  {
+    sDate = sDate+"-"+String(iMonth);
+  }
+  if(iDate < 10)
+  {
+    sDate = sDate+"-0"+String(iDate);
+  }
+  else
+  {
+    sDate = sDate+"-"+String(iDate);
+  }
+  if(ihour < 10)
+  {
+    sDate = sDate+" 0"+String(ihour);
+  }
+  else
+  {
+    sDate = sDate + " " + String(ihour);
+  }
+  if(iminute < 10)
+  {
+    sDate = sDate+":0"+String(iminute);
+  }
+  else
+  {
+    sDate = sDate + ":" + String(iminute);
+  }
+  if(sec < 10)
+  {
+    sec = String(sec);
+    sec = "0" + sec;
+  }
+  else
+  {
+    sec = String(sec);
+  }
+  sDate = sDate+":"+sec;
+  return sDate;
+}
+
+function JFormatDatepmz(strDate)
+{
+  var strPdate=strDate;
+  var iYear,iMonth,iDate,ihour,iminute,sec,sDate;
+  iYear=strPdate.getFullYear();
+  iMonth=strPdate.getMonth()+1;
+  iDate=strPdate.getDate();
+  sDate=String(iYear);
+ 
+  if(iMonth < 10)
+  {
+    sDate = sDate + "-0" + String(iMonth); 
+  }
+  else
+  {
+    sDate = sDate+"-"+String(iMonth);
+  }
+  if(iDate < 10)
+  {
+    sDate = sDate+"-0"+String(iDate);
+  }
+  else
+  {
+    sDate = sDate+"-"+String(iDate);
+  }
+  return sDate;
+}
+
+function JFormatTimepmz(strDate)
+{
+  var strPdate=strDate;
+  var iYear,iMonth,iDate,ihour,iminute,sec,sDate;
+  ihour=strPdate.getHours();
+  iminute=strPdate.getMinutes();
+  sec = strPdate.getSeconds();
+ 
+  if(ihour < 10)
+  {
+    sDate = "0"+String(ihour);
+  }
+  else
+  {
+    sDate = String(ihour);
+  }
+  if(iminute < 10)
+  {
+    sDate = sDate+":0"+String(iminute);
+  }
+  else
+  {
+    sDate = sDate + ":" + String(iminute);
+  }
+  if(sec < 10)
+  {
+    sec = String(sec);
+    sec = "0" + sec;
+  }
+  else
+  {
+    sec = String(sec);
+  }
+  sDate = sDate+":"+sec;
+  return sDate;
+}
+
+function addHours(startTime)
+{
+    var interTimes = 12 * 60 * 60 * 1000;
+    interTimes = parseInt(interTimes);
+    var newDate = new Date(Date.parse(startTime)+interTimes);
+    
+    return newDate;
+}
+$$(document).ready(function()
+{
+     $$("p#index").next("div.leftMenuBody").show();
+     $$("a#logInInfo").css("color","#AFEEEE");
+     
+     initDatePicker();
+
+ 
+     $$(".ui-datepicker-time").click(function(){
+           $$(".ui-datepicker-css").css("display","block")
+     });
+     $$(".ui-kydtype li").click(function(){
+           $$(".ui-kydtype li").removeClass("on").filter($$(this)).addClass("on");
+     });
+     $$(".ui-datepicker-quick input").click(function(){
+            var thisAlt = $$(this).attr("alt");
+            var dateList = timeConfig(thisAlt);
+            $$(".ui-datepicker-time").val(dateList);
+            $$(".ui-datepicker-css").css("display","none");
+            $$("#ui-datepicker-div").css("display","none");
+            dateString = document.getElementById("ui-datepicker-time").value;
+            
+            $$("#divAjax").load("/userAnalyse/" + "$serverID" + "/logInInfo/dataView?flag=0&dateRange=" + dateString); 
+//            loadXMLDoc("$serverID");
+     });
+     $$(".ui-close-date").click(function(){
+            $$(".ui-datepicker-css").css("display","none");
+            $$("#ui-datepicker-div").css("display","none")
+                        
+     });
+
+     $$("#timeOK").click(function(){
+          obj = document.getElementById("ullaydate").getElementsByTagName("li");
+          var stringStartTime = obj[0].innerHTML;
+          var stringEndTime = obj[1].innerHTML;
+                
+          var dateList = stringStartTime + "—" + stringEndTime;
+          
+          $$(".ui-datepicker-time").val(dateList);
+          $$(".ui-datepicker-css").css("display","none");
+          $$("#ui-datepicker-div").css("display","none");
+          dateString = document.getElementById("ui-datepicker-time").value;
+            
+          $$("#divAjax").load("/userAnalyse/" + "$serverID" + "/logInInfo/dataView?flag=0&dateRange=" + dateString); 
+     })
+     
+     $$("#timeHourOK").click(function(){
+          var stringStartTime0 = $$("#hourTime").val();
+          var startTime = new Date(stringStartTime0);
+          var endTime = addHours(startTime);
+          var stringEndTime0 = JFormatDateTimepmz(endTime);
+          var stringStartDate = JFormatDatepmz(startTime);
+          var stringStartTime = JFormatTimepmz(startTime);
+          var stringEndDate = JFormatDatepmz(endTime);
+          var stringEndTime = JFormatTimepmz(endTime);
+          var dateList = stringStartTime0 + "—" + stringEndTime0;
+          $$(".ui-datepicker-time").val(dateList);
+          $$(".ui-datepicker-css").css("display","none");
+          $$("#ui-datepicker-div").css("display","none");
+//          dateString = document.getElementById("ui-datepicker-time").value;
+          $$("#divAjax").load("/userAnalyse/" + "$serverID" + "/logInInfo/dataView?flag=1" + "&startDate=" + stringStartDate + "&startTime=" + stringStartTime + "&endDate=" + stringEndDate + "&endTime=" + stringEndTime); 
+     })
+     
+/*
+     var state0 = 1;
+     var state1 = 1;
+     var state2 = 1;
+     $$("#colorExplain0").click(function(){
+          if(1 == state0)
+          {
+              document.getElementById("colorExplain0").style.color = '#708090';
+              state0 = 0;
+              
+          }
+          else if(0 == state0)
+          {
+              document.getElementById("colorExplain0").style.color = '#FF8F0F';
+              state0 = 1;
+          }
+     });
+
+     $$("#colorExplain1").click(function(){
+          if(1 == state1)
+          {
+              document.getElementById("colorExplain1").style.color = '#708090';
+              state1 = 0;
+              
+          }
+          else if(0 == state1)
+          {
+              document.getElementById("colorExplain1").style.color = '#33A100';
+              state1 = 1;
+          }
+     })
+
+     $$("#colorExplain2").click(function(){
+          if(1 == state2)
+          {
+              document.getElementById("colorExplain2").style.color = '#708090';
+              state2 = 0;
+              
+          }
+          else if(0 == state2)
+          {
+              document.getElementById("colorExplain2").style.color = '#97BBCD';
+              state2 = 1;
+          }
+     })
+*/
+     dateString = document.getElementById("ui-datepicker-time").value;
+//     $$("#divAjax").load("/userAnalyse/" + "$serverID" + "/logInInfo/dataView?flag=0&state0=1&state1=1&state2=1&dateRange=" + dateString); 
+     $$("#divAjax").load("/userAnalyse/" + "$serverID" + "/logInInfo/dataView?flag=0&dateRange=" + dateString);
+//     loadXMLDoc('$serverID');
+});
+
+function loadXMLDoc(serverID)
+{
+   var xmlhttp;
+   if (window.XMLHttpRequest)
+   {// code for IE7+, Firefox, Chrome, Opera, Safari
+      xmlhttp=new XMLHttpRequest();
+   }
+   else
+   {// code for IE6, IE5
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+   }
+   xmlhttp.onreadystatechange=function()
+   {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+      {
+          document.getElementById("divAjax").innerHTML=xmlhttp.responseText;
+      }
+   }
+   dateString = document.getElementById("ui-datepicker-time").value;
+//   xmlhttp.open("GET","/userAnalyse/" + serverID + "/saveInfo",true);
+   xmlhttp.open("GET","/userAnalyse/" + serverID + "/logInInfo/dataView?dateRange="+dateString,true);
+   xmlhttp.send();
+}
+
+</script>
+</head>
+    
+    $ tableTitle = "%s%s%s"%("登录用户统计(服务器:", confDic[serverID][0][1], ")")
+    <body> 
+       $:render.base() 
+        <div class = contentView>
+            $:render.leftMenu(0, 0, serverID)
+          <div class = rightContentView>
+            $:render.analyseOption(confDic[serverID][0][1])
+            <div class = divDatePickerView>
+            <input type="text" class="ui-datepicker-time" id = "ui-datepicker-time" readonly value="" style = "width:290px"/>
+
+            <div class="ui-datepicker-css">
+                <div class="ui-datepicker-quick">
+                    <p>快捷日期<a class="ui-close-date">X</a></p>
+                         <div>
+                         <input class="ui-date-quick-button" id = "singleDate" type="button" value="今天" alt="0"  name=""/>
+                         <input class="ui-date-quick-button" id = "singleDate" type="button" value="昨天" alt="-1" name=""/>
+                         <input class="ui-date-quick-button" id = "dates" type="button" value="7天内" alt="-6" name=""/>
+                         <input class="ui-date-quick-button" id = "dates" type="button" value="14天内" alt="-13" name=""/>
+                         <input class="ui-date-quick-button" id = "dates" type="button" value="30天内" alt="-29" name=""/>
+                         <input class="ui-date-quick-button" id = "dates" type="button" value="60天内" alt="-59" name=""/>
+                         </div>
+               </div>
+               <div class="ui-datepicker-choose">
+               <p style = "background-color:#009F94;color:#FFFFFF">自选日期</p>
+               <div class="">
+<!--
+               <input name="startDate" id="startDate" class="startDate" readonly value="2014/12/20" type="text">
+               -
+               <input name="endDate" id="endDate" class="endDate" readonly  value="2014/12/20" type="text" disabled onChange="datePickers()">
+--->
+
+               <ul class = "ullaydate" id = "ullaydate">
+                    <li class="inline laydate-iconEx" id="start" style="width:100px; margin-right:10px;"></li>
+                    <li class="inline laydate-iconEx" id="end" style="width:100px;"></li>
+               </ul> 
+<!--
+               <input class="laydate-iconEx" id="startTime" value="" style="width:100px; margin-right:10px;"> 
+               <input class="laydate-iconEx" id="endTime" value="" style="width:100px;">               
+-->     
+               <input class="ui-date-quick-buttonEx" id = "timeOK" type="button" value="确认" alt="-59" name=""/>
+               </div>
+               <div class="iui-datepicker-choose" style = "margin-top:5px">
+               <p style = "background-color:#009F94;color:#FFFFFF">12小时</p>
+               <div class="">
+<!--
+               <input class="laydate-iconEx" id="startTime" value="" style="width:100px; margin-right:10px;"> 
+               <input class="laydate-iconEx" id="endTime" value="" style="width:100px;">               
+-->
+               <input placeholder="" class="laydate-iconEx" id = "hourTime" style = "margin-left:25px;" onClick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+               <input class="ui-date-quick-buttonEx" id = "timeHourOK" type="button" value="确认" alt="-59" name="" style = "margin-top:10px"/>
+               </div>
+               </div>
+            </div>
+            </div>
+            </div>
+            <div>
+            <h2 class = rightTableTitle>$tableTitle</h2>
+            <div id = divAjax></div>
+<!--
+            <p id = circle0></p>
+            <p id = colorExplain0>本日登录新帐号</p>
+            <p id = circle1></p>
+            <p id = colorExplain1>当前在线人数</p>
+            <p id = circle2></p>
+            <p id = colorExplain2>本日登录帐号总数</p>
+-->
+            </div>
+          </div>
+        </div>
+<script type="text/javascript">
+!function(){
+        laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+        laydate({elem: '#demo'});//绑定元素
+}();
+
+//日期范围限制
+var start = {
+    elem: '#start',
+    format: 'YYYY-MM-DD',
+    min: '1970-01-01', //设定最小日期为当前日期
+    max: laydate.now(), //最大日期
+    istime: true,
+    istoday: false,
+    choose: function(datas){
+         end.min = datas; //开始日选好后，重置结束日的最小日期
+         end.start = datas //将结束日的初始值设定为开始日
+    }
+};
+
+var end = {
+    elem: '#end',
+    format: 'YYYY-MM-DD',
+    min: '1970-01-01',
+    max: laydate.now(),
+    istime: true,
+    istoday: false,
+    choose: function(datas){
+        start.max = datas; //结束日选好后，充值开始日的最大日期
+    }
+};
+laydate(start);
+laydate(end);
+
+//自定义日期格式
+laydate({
+    elem: '#test1',
+    format: 'YYYY年MM月DD日',
+    festival: true, //显示节日
+    choose: function(datas){ //选择日期完毕的回调
+        alert('得到：'+datas);
+    }
+});
+
+//日期范围限定在昨天到明天
+laydate({
+    elem: '#hello3',
+    min: laydate.now(-1), //-1代表昨天，-2代表前天，以此类推
+    max: laydate.now(+1) //+1代表明天，+2代表后天，以此类推
+});
+</script>
+    </body>
+</html>

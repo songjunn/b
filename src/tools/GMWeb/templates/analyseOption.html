@@ -1,0 +1,33 @@
+$def with(serverName)
+<html>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type = "text/javascript" src = "/static/js/GMWebQuery.js"></script>
+<script type = "text/javascript">
+
+$$("body").bind("click",function()
+{ 
+   $$(".selectListView").hide();
+})
+</script>
+
+     $def serverInfoList():
+        <ul class = selectListView>
+        $for i in range(len(secs)):
+             $if 1 == (serverInfoDic[secs[i]]['serverState']):
+                 <li>$(confDic[secs[i]][0][1])</li>
+        </ul>
+
+     <div class = rightOption>
+              <form action = "" method = "post">
+              <div>服务器选择:
+                    <input type = "text" id = selectServerName class = selectView readonly = "true" name = "serverName"  value = $serverName>
+                    <b class = slidedownPic></b>
+                    $:serverInfoList()
+                    <div class = divTypeView>
+                    <input type = "submit" id = submit class = submitView name = "submit" value = "确认">
+                    </div>
+              </div>
+              </form>
+            </div>
+
+</html>

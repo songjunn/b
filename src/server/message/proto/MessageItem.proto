@@ -1,0 +1,67 @@
+package Message;
+
+//同步获得道具
+message ItemGainSync
+{
+   optional int64	itemid 		= 1;	//道具实体ID
+   optional int32	templateid= 2;	//模板ID
+   optional int32	stack		  = 3;	//堆叠数量
+   optional	int32	position	= 4;	//位置
+   optional int64	parent 		= 5;	//玩家ID
+   optional int64	equipid 	= 6;	//装备角色ID
+   optional int32	intensify	= 7;	//强化等级
+} 
+
+//通知删除道具
+message ItemDeleteSync
+{
+   optional int64	itemid 		= 1;	//道具实体ID
+} 
+
+//请求使用道具
+message ItemUseRequest
+{
+   optional int64	itemid 		= 1;	//道具实体ID
+} 
+
+//请求销毁道具
+message ItemDeleteRequest
+{
+   optional int64	itemid 		= 1;	//道具实体ID
+} 
+
+//请求出售道具
+message ItemSellRequest
+{
+   optional int64	itemid 		= 1;	//道具实体ID
+} 
+
+//请求穿装备
+message ItemEquipRequest
+{
+   optional int64	itemid 		= 1;	//道具实体ID
+   optional int64	roleid 		= 2;	//角色ID
+} 
+
+//请求脱装备
+message ItemUnequipRequest
+{
+   optional int64	itemid 		= 1;	//道具实体ID
+   optional int64	roleid 		= 2;	//角色ID
+   optional int32	position	= 3;	//装备位置
+} 
+
+//同步道具属性
+message ItemAttrSync {
+    message Attr {
+        optional int32  type    = 1;    //属性ID
+        optional string group   = 2;    //属性组
+        optional string key     = 3;    //属性键
+        optional int32  val32   = 4;		//属性值
+        optional int64  val64   = 5;		//属性值
+        optional string valstr  = 6;    //属性值
+    }
+
+    optional int64  itemid      = 1;    //道具实体ID
+    repeated Attr   attr        = 2;    //属性
+}

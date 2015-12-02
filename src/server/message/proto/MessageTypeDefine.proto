@@ -1,0 +1,80 @@
+package Message; 
+
+enum MsgDefine {
+    MSG_SERVER_BEGIN = 0;               //server发起的消息
+    
+    MSG_SERVER_REGISTER = 1;            //注册服务器：服务器ID，类型，端口，ip
+    MSG_SERVER_SYNCSERVER = 2;          //通知服务器去连接其它服务器：服务器ID，类型，端口，ip
+    MSG_SERVER_SYNCGATELOAD = 3;        //GateServer同步负载情况：在线人数
+    MSG_SERVER_WORLD_REQUEST = 4;       //请求游戏世界初始数据
+    MSG_SERVER_WORLD_RESPONSE = 5;      //同步游戏世界初始数据
+    MSG_SERVER_NET_ACCEPT = 6;          // net -> server :create socket
+    MSG_SERVER_NET_CLOSE = 7;           // net -> server :close socket
+    MSG_SERVER_NET_CONNECT = 8;         // net -> server :connect sync return
+	
+    MSG_COMMON_ERROR = 100;             //发送错误码
+    MSG_COMMON_EVENT = 101;             //同步游戏事件
+	
+    MSG_GAMEOBJ_CREATE = 200;
+    MSG_GAMEOBJ_REMOVE = 201;
+    MSG_GAMEOBJ_OBJFIELD_SETI32 = 202;
+    MSG_GAMEOBJ_OBJFIELD_SETI64 = 203;
+    MSG_GAMEOBJ_OBJFIELD_SETSTR = 204;
+    MSG_GAMEOBJ_OBJFIELD_SETALL = 205;
+    MSG_GAMEOBJ_MAPFIELD_ADD = 206;
+    MSG_GAMEOBJ_MAPFIELD_DEL = 207;
+    MSG_GAMEOBJ_MAPFIELD_SETALL = 208;
+    MSG_GAMEOBJ_MAPFIELD_SETI32 = 209;
+    MSG_GAMEOBJ_MAPFIELD_SETI64 = 210;
+    MSG_GAMEOBJ_MAPFIELD_SETSTR = 211;
+    MSG_GAMEOBJ_SYNC = 212;
+    MSG_GAMEOBJ_SYNC_OBJFIELD = 213;
+    MSG_GAMEOBJ_SYNC_MAPFIELD = 214;
+    MSG_GAMEOBJ_SYNC_FINISH = 215;
+    MSG_GAMEOBJ_LOAD_REQUEST = 216;     //请求加载obj数据
+    MSG_GAMEOBJ_LOGIN_REQUEST = 217;    //请求登陆obj
+	
+    MSG_USER_lOGIN_REQUEST = 301;       //账号登陆：账号ID，账号名
+    MSG_USER_DISPLACE = 302;            //顶号
+    MSG_USER_GET_GATESVR = 303;         //通知客户端连接网关：账号ID，session，ip，端口
+    MSG_USER_HEART_RESPONSE = 304;      //心跳包响应
+	
+    MSG_PLAYER_LOGIN_REQUEST = 400;     //角色登陆GameServer：角色ID，场景ID，坐标
+    MSG_PLAYER_LOGOUT_REQEUST = 401;    //角色登出GameServer：角色ID
+    MSG_PLAYER_CHECKNAME_REQUEST = 402; //检查重名
+    MSG_PLAYER_CHECKNAME_RESPONSE = 403;//检查重名反馈
+    MSG_PLAYER_LOAD_COUNT = 404;        //同步角色数量：账号ID，角色数量
+    MSG_PLAYER_LOAD_DATA = 405;         //同步角色属性
+    MSG_PLAYER_LOAD_OVER = 406;         //角色数据加载完毕：角色ID
+    MSG_PLAYER_SYNC_ATTRINT = 407;      //同步角色属性int
+    MSG_PLAYER_SYNC_ATTRI64 = 408;      //同步角色属性int64
+	
+    MSG_ITEM_DATA_SYNC = 500;           //同步获得道具
+    MSG_ITEM_DELETE_SYNC = 501;         //同步销毁道具
+    MSG_ITEM_ATTRINT_SYNC = 502;        //同步道具属性
+    MSG_ITEM_ATTRI64_SYNC = 503;        //同步道具属性
+    
+    MSG_SERVER_END = 29999;
+    MSG_CLIENT_BEGIN = 30000;           //client发起的消息
+	
+    MSG_REQUEST_USER_CHECK = 30001;     //账号验证：账号名，账号密码(md5加密)
+    MSG_REQUEST_GUEST_CHECK = 30002;    //游客验证：设备ID
+    MSG_REQUEST_USER_LOGIN = 30003;     //账号登陆：账号ID，session密钥
+    MSG_REQUEST_USER_LOGOUT = 30004;    //账号登陆：null
+    MSG_REQUEST_USER_HEART = 30005;     //心跳包
+    MSG_REQUEST_PLAYER_CREATE = 30006;  //创建角色：账号ID，角色名
+    MSG_REQUEST_PLAYER_DELETE = 30007;  //删除角色：角色ID
+    MSG_REQUEST_PLAYER_OBSERVE = 30008; //观察
+	
+    MSG_REQUEST_ITEM_USE = 30100;       //使用道具
+    MSG_REQUEST_ITEM_DELETE = 30101;    //销毁道具
+    MSG_REQUEST_ITEM_SELL = 30102;      //出售道具
+    MSG_REQUEST_ITEM_EQUIP = 30103;     //穿装备
+    MSG_REQUEST_ITEM_UNEQUIP = 30104;   //脱装备
+
+    MSG_REQUEST_DEBUG = 60000;	        //调试消息
+    MSG_REQUEST_NET_TEST = 60001;	   		//net test
+	
+    MSG_CLIENT_END = 65535;			    		//最大65535
+
+}

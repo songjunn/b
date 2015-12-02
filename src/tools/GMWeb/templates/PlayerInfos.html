@@ -1,0 +1,45 @@
+﻿$def with()
+<!DOCTYPE html>
+<html>
+<head>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type = "text/javascript" src = "/static/js/GMWebQuery.js"></script>
+<script type = "text/javascript">
+
+$$(document).ready(function()
+{ 
+     $$("p.leftMenuHead").click(function()
+     {
+       $$(this).next("div.leftMenuBody").slideToggle().siblings("div.leftMenuBody").slideUp();
+     });
+     $$("#selectServerName").click(function()
+     {
+       $$("ul.selectListView").slideToggle();
+     });
+     $$("ul.selectListView").children().click(function(){
+       var liText = $$(this).text();
+       $$("#selectServerName").val(liText);
+       $$("ul.selectListView").hide();
+     });     
+     $$("#selectType").click(function()
+     {
+       $$("ul.selectTypeListView").slideToggle();
+     })
+     $$("ul.selectTypeListView").children().click(function(){
+       var liText = $$(this).text();
+       $$("#selectType").val(liText);
+       $$("ul.selectTypeListView").hide();
+     }); 
+});
+</script>
+</head>
+    <body> 
+       $:render.base() 
+        <div class = contentView>
+            $:render.leftMenu(0, 0, secs[0])
+        <div class = rightContentView>
+            $:render.rightContentOption()
+        </div>
+        </div>
+    </body>
+</html>

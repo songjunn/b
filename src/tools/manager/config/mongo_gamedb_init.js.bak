@@ -1,0 +1,26 @@
+db.createCollection("guest");
+db.createCollection("player");
+db.createCollection("item");
+db.createCollection("hero");
+db.createCollection("event");
+db.createCollection("arena_data");
+db.createCollection("arena_order");
+db.createCollection("arena_info");
+db.createCollection("battlepoint");
+db.createCollection("battlejoiner");
+db.createCollection("battlereward");
+db.createCollection("expedition");
+db.createCollection("serverInfo");
+db.player.ensureIndex({"userid":-1});
+db.player.ensureIndex({"playerid":-1},{"unique":true});
+db.item.ensureIndex({"playerid":-1},{"unique":true});
+db.hero.ensureIndex({"playerid":-1},{"unique":true});
+db.guest.ensureIndex({"guestid":-1},{"unique":true});
+db.guest.ensureIndex({"device":-1},{"unique":true});
+db.battlepoint.ensureIndex({"pointid":-1},{"unique":true});
+db.battlejoiner.ensureIndex({"joinerid":-1},{"unique":true});
+db.battlereward.ensureIndex({"joinerid":-1},{"unique":true});
+db.arena_data.ensureIndex({"playerid":-1},{"unique":true});
+db.arena_order.ensureIndex({"pid":-1},{"unique":true});
+db.expedition.ensureIndex({"playerid":-1},{"unique":true});
+db.serverInfo.save({"playerCount":0, "registerCount":0, "rechargeCount":0, "serverID":0})

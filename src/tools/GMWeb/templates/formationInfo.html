@@ -1,0 +1,46 @@
+﻿$def with(playerInfoArrays, selectType, playerValue, serverID)
+<!DOCTYPE html>
+<html>
+<head>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type = "text/javascript" src = "/static/js/GMWebQuery.js"></script>
+<script type = "text/javascript">
+
+$$(document).ready(function()
+{
+     $$("p#playerInfo").next("div.leftMenuBody").show();
+     $$("a#formationInfo").css("color","#AFEEEE");
+});
+</script>
+</head>
+    $def tr(playerInfoArrays):
+        $for playerInfoArray in playerInfoArrays:
+            $for i in range(len(playerInfoArray['formatinfo'])):
+                <tr>
+                <td>$playerInfoArray['formatinfo'][i]['format']</td>
+                <td>0</td>
+                <td>$playerInfoArray['formatinfo'][i]['level']</td>
+                </tr>
+
+    $ tableTitle = "%s%s%s%s%s"%("角色阵营信息(服务器:", confDic[serverID][0][1], ", 用户: ", playerValue, ")")
+    <body> 
+       $:render.base() 
+        <div class = contentView>
+            $:render.leftMenu(selectType, playerValue, serverID)
+          <div class = rightContentView>
+            $:render.rightContentOption()
+            <div>
+            <h2 class = rightTableTitle>$tableTitle</h2>
+            <table id = customers> 
+                <tr>
+                <th>当前阵形</th>
+                <th>站位配置</th>
+                <th>习得阵型等级</th>
+                </tr>
+                $:tr(playerInfoArrays)
+            </table>
+            </div>
+          </div>
+        </div>
+    </body>
+</html>

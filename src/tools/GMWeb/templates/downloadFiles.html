@@ -1,0 +1,28 @@
+﻿$def with(path, fileList)
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+        	  html{background: #f9f9f9;overflow-x:hidden;border-left-style:outset;border-right-style:outset;margin-left: 2cm;margin-bottom: 0cm;margin-right: 2cm; padding-left: 1%; padding-right: 1%;}
+        	  div.leftmenu{background-color:#bebebe; height:1000px; width:135px; float:left;}
+        	  div.rightcontent{background-color:#f9f9f9; height:1000px; width:auto;float:left;}
+        	  h3.title{text-align:center; font-weight:bold; padding:6px;}
+        	  div.backColor{display: block; width: 120px; background-color: #bebebe;}
+        	  ul.leftMenu{float:None; list-style-type:none; margin:0; padding-left:5%; overflow:hidden;}
+            li.leftMenu{float:None}
+            ul.topMenu{list-style-type:none; margin:0; padding:0; overflow:hidden;}
+            li.topMenu{float:left}
+           
+        </style>
+    </head>
+    
+    <h1>文件列表</h1>
+    <body>   
+        <ul> 
+        $for i in range(len(fileList)):
+             $ hrefFile = '%s%s'%(path, fileList[i])
+             <li><a href = $hrefFile>$fileList[i]</a></li>  
+        </ul>     
+    </body>
+
+</html>

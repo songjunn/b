@@ -1,0 +1,18 @@
+# monitor net flow
+#! /bin/bash
+
+typeset in in_old
+typeset out out_old
+
+while true
+do
+	in=$(cat /proc/net/dev | grep eth0 | sed  's=^.*:=='  | awk '{ print $1 }')
+	out=$(cat /proc/net/dev | grep eth0 | sed  's=^.*:=='  | awk '{ print $9 }')
+
+	echo "IN: $((in - in_old)) bytes    OUT: $((out - out_old)) bytes"
+	
+	in_old=${in}
+    out_old=${out}
+
+    sleep 1
+done

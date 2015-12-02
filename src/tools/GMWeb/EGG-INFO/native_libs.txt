@@ -1,0 +1,2 @@
+bson/_cbson.so
+pymongo/_cmessage.so

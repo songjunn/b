@@ -1,0 +1,44 @@
+﻿$def with(selectType, playerValue, serverID)
+<!DOCTYPE html>
+<html>
+<head>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type = "text/javascript" src = "/static/js/GMWebQuery.js"></script>
+<script type = "text/javascript">
+
+$$(document).ready(function()
+{
+     $$("p#playerInfo").next("div.leftMenuBody").show();
+     $$("a#heroesItem").css("color","#AFEEEE");
+});
+</script>
+</head>
+
+    $ tableTitle = "%s%s%s%s%s"%("英雄穿着装备(服务器:", confDic[serverID][0][1], ", 用户: ", playerValue, ")")
+    <body> 
+       $:render.base() 
+        <div class = contentView>
+            $:render.leftMenu(selectType, playerValue, serverID)
+          <div class = rightContentView>
+            $:render.rightContentOption()
+            <div>
+            <h2 class = rightTableTitle>$tableTitle</h2>
+            <table id = customers> 
+              <tr>
+              <th>装备名称</th>
+              <th>装备等级</th>
+              <th>强化等级</th>
+              <th>镶嵌情况</th>
+              </tr>
+              <tr>
+              <td>100</td>
+              <td>200</td>
+              <td>300</td>
+              <td>400</td>
+              </tr>
+            </table>
+            </div>
+          </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,9 @@
+$def with(posts, login_form)
+
+$if not cookie().get('username'):
+    <form action = "" method = "post">
+    $:login_form.render()
+    </form>
+$else:
+    welcome $cookie().get('username')!<a href = "/logout" mce_href = "logout">退出</a>
+

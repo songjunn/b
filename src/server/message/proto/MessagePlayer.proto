@@ -1,0 +1,73 @@
+package Message; 
+
+//角色登录
+message PlayerLogin {
+    optional int64  uid         = 1;    //账号ID
+    optional int64  pid         = 2;    //角色ID
+    optional int32  templateid	= 3;    //角色模板
+} 
+
+//角色登出
+message PlayerLogout {
+    optional int64  pid         = 1;    //角色ID
+} 
+
+//创建角色
+message CreatePlayer { 
+    optional int64  uid 		= 1;    //账号ID
+    optional int32  server      = 2;    //选择的区服号
+    optional string name        = 3;    //角色名
+    optional int32  roletemplate= 4;    //模板ID
+    optional int64  pid         = 5;    //角色流水号
+    optional int32  stunt       = 6;    //绝技
+    optional int32  quality     = 7;    //品质
+}
+
+//删除角色
+message DeletePlayer { 
+    optional int64  pid         = 1;    //角色ID
+} 
+
+//验证重名
+message CheckNameRequest {
+    optional int64  uid         = 1;     //账号ID
+    optional int64  pid         = 2;    //角色ID
+    optional string name        = 3;    //角色名
+} 
+
+//验证重名
+message CheckNameResponse {
+    optional int64  uid         = 1;    //账号ID
+    optional int64  pid         = 2;    //角色ID
+    optional bool   result      = 3;    //验证结果
+} 
+
+//同步角色数量
+message PlayerCount {
+    optional int64  uid         = 1;    //账号ID
+    repeated int64  player      = 2;    //角色ID
+}
+
+//同步角色属性
+message PlayerAttrSync {
+    message Attr {
+        optional int32  type    = 1;    //属性ID
+        optional int32  val32   = 2;	  //属性值
+        optional int64  val64   = 3;	  //属性值
+        optional string valstr  = 4;    //属性值
+    }
+
+    optional int64  pid         = 1;    //角色ID
+    repeated Attr   attr        = 2;    //属性
+}
+
+//角色信息同步结束
+message PlayerLoadOver {
+    optional int64  pid         = 1;    //角色ID
+} 
+
+//请求观察其他人
+message ObservePlayerRequest {
+    optional int64  playerid    = 1;    //主角ID
+    optional string	playername	= 2;    //主角名字
+} 

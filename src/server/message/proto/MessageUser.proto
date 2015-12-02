@@ -1,0 +1,61 @@
+package Message; 
+
+//账号登录
+message UserLogin { 
+    optional int64  uid     = 1;    //账号ID
+    optional int32  world   = 2;    //区服号
+    optional int32  server  = 3;    //登陆的GameServer
+    optional string type    = 4;    //obj类型
+    optional string key     = 5;    //索引
+} 
+
+//账号被顶出
+message UserDisplace { 
+    optional int64  uid     = 1;    //账号ID
+} 
+
+//通知客户端连接网关
+message ConnectGate { 
+    optional int64  uid     = 1;    //账号ID
+    optional int64  key     = 2;    //密钥
+    optional string ip      = 3;    //ip
+    optional int32  port    = 4;    //端口
+    optional int32  server  = 5;    //选择的区服号
+} 
+
+//心跳响应
+message UserHeartResponse { 
+    optional int64  stime   = 1;    //服务器时间戳
+} 
+
+//账号密码验证
+message UserCheck { 
+    optional int32  server  = 1;    //选择的区服号
+    optional string userid  = 2;    //用户ID
+    optional string ticket  = 3;    //票据
+    optional int32  client  = 4;    //1:IOS 2:Android
+}
+
+//游客验证
+message GuestCheck { 
+    optional string device  = 1;    //设备号
+    optional int32  server  = 2;    //选择的区服号
+} 
+
+//客户端连接网关
+message ClientLogin { 
+    optional int64  uid     = 1;    //账号ID
+    optional int64  key     = 2;    //密钥
+    optional int32  server  = 3;    //选择的区服号
+    optional string accesstoken = 4;//校验字符串
+} 
+
+//账号登出
+message UserLogout { 
+    optional int64  uid     = 1;    //账号ID
+} 
+
+//心跳请求
+message UserHeartRequest { 
+    optional int64  pid     = 1;    //角色ID
+} 

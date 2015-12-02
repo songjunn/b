@@ -1,0 +1,44 @@
+﻿$def with(packageInfoArrays, selectType, playerValue, serverID)
+<!DOCTYPE html>
+<html>
+<head>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type = "text/javascript" src = "/static/js/GMWebQuery.js"></script>
+<script type = "text/javascript">
+
+$$(document).ready(function()
+{
+     $$("p#playerInfo").next("div.leftMenuBody").show();
+     $$("a#packageInfo").css("color","#AFEEEE");
+});
+</script>
+</head>
+    $def tr(packageInfoArrays):
+        $for packageInfoArray in packageInfoArrays:
+            $for i in range(len(packageInfoArray['items'])):
+                <tr>
+                <td>$packageInfoArray['items'][i]['itemid']</td>
+                <td>$packageInfoArray['items'][i]['intensify']</td>
+                </tr>
+
+    $ tableTitle = "%s%s%s%s%s"%("角色背包信息(服务器:", confDic[serverID][0][1], ", 用户: ", playerValue, ")")
+    <body> 
+       $:render.base() 
+        <div class = contentView>
+            $:render.leftMenu(selectType, playerValue, serverID)
+          <div class = rightContentView>
+            $:render.rightContentOption()
+            <div>
+            <h2 class = rightTableTitle>$tableTitle</h2>
+            <table id = customers> 
+                <tr>
+                <th>物品名称</th>
+                <th>物品类别</th>
+                </tr>
+                $:tr(packageInfoArrays)
+            </table>
+            </div>
+          </div>
+        </div>
+    </body>
+</html>

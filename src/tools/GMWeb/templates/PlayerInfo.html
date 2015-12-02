@@ -1,0 +1,64 @@
+﻿$def with(playerInfoArrays, selectType, playerValue, serverID)
+<!DOCTYPE html>
+<html>
+<head>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type = "text/javascript" src = "/static/js/GMWebQuery.js"></script>
+<script type = "text/javascript">
+
+$$(document).ready(function()
+{ 
+     
+     $$("p#playerInfo").next("div.leftMenuBody").show();
+     $$("a#baseInfo").css("color","#AFEEEE");
+});
+</script>
+</head>
+    $def tr(playerInfoArrays):
+        $if(0 != playerInfoArrays):
+           $for playerInfo in playerInfoArrays:
+             <tr class = alt>
+               <td>$playerInfo['playerid']</td>
+               <td>$playerInfo['name']</td>
+               <td>$playerInfo['level']</td>
+               <td>$playerInfo['fighting']</td>
+               <td>400</td>
+               <td>500</td>
+               <td>600</td>
+             </tr>
+
+    $ stringType = "用户ID"
+       
+       $def createTableTitle():
+          $if(0 == cmp(selectType, "0")):
+              $stringType = ""
+          $elif(0 == cmp(selectType, "1")):
+              $stringType = "角色名称: "   
+       
+    $ tableTitle = "%s%s%s%s%s"%("角色基本信息(服务器:", confDic[serverID][0][1], ", 用户: ", playerValue, ")")    
+        
+    <body> 
+       $:render.base() 
+        <div class = contentView>
+            $:render.leftMenu(selectType, playerValue, serverID)
+          <div class = rightContentView>
+            $:render.rightContentOption()
+            <div>
+            <h2 class = rightTableTitle>$tableTitle</h2>
+            <table id = customers> 
+                 <tr>
+                 <th>角色ID</th>
+                 <th>角色名称</th>
+                 <th>角色等级</th>
+                 <th>角色战力</th>
+                 <th>角色品质</th>
+                 <th>角色星等</th>
+                 <th>角色特性</th>
+                 </tr>
+                 $:tr(playerInfoArrays)
+             </table>
+             </div>
+          </div>
+        </div>
+    </body>
+</html>

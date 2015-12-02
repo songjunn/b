@@ -1,0 +1,381 @@
+﻿$def with(serverID, forbidReasonDic, blacklistCursor)
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type = "text/javascript" src = "/static/js/GMWebQuery.js"></script>
+<script type = "text/javascript" src="/static/js/jquery-1.8.3.js"></script>
+<script type = "text/javascript">
+
+var blacklist = {userid:[],forbidReasonIndex:[],forbidTime:[]};
+var forbidReasonInfo = {forbidIndex:[], forbidReason:[]};
+var url;
+
+$def initForbidReasonInfo():
+    $for i in range(len(forbidReasonDic)):
+        $ forbidReasonIndex = forbidReasonDic[i][0]
+        $ forbidReason = forbidReasonDic[i][1]
+        forbidReasonInfo['forbidIndex'].push('$forbidReasonIndex')
+        forbidReasonInfo['forbidReason'].push('$forbidReason')
+
+$def initBlacklistArray():
+    $for blacklistPlayer in blacklistCursor:
+        $ userid = blacklistPlayer['userid']
+        $ forbidReasonIndex = blacklistPlayer['forbidReason']
+        $ forbidTime = blacklistPlayer['forcetime']
+        blacklist['userid'].push('$userid')
+        blacklist['forbidReasonIndex'].push('$forbidReasonIndex')
+        blacklist['forbidTime'].push('$forbidTime')
+
+$def getURL():
+    url = '$confDic[serverID][2][1]'
+
+function getForbidReason(index)
+{
+    for(var i = 0; i < forbidReasonInfo['forbidIndex'].length; i++)
+    {
+        if(index == forbidReasonInfo['forbidIndex'][i])
+        {
+            return forbidReasonInfo['forbidReason'][i];
+        }
+    } 
+}
+
+function JFormatDatepmz(strDate)
+{
+  var strPdate=strDate;
+  var iYear,iMonth,iDate,ihour,iminute,sec,sDate;
+  iYear=strPdate.getFullYear();
+  iMonth=strPdate.getMonth()+1;
+  iDate=strPdate.getDate();
+  ihour=strPdate.getHours();
+  iminute=strPdate.getMinutes();
+  sec = strPdate.getSeconds();
+  sDate=String(iYear);
+ 
+  if(iMonth < 10)
+  {
+    sDate = sDate + "-0" + String(iMonth); 
+  }
+  else
+  {
+    sDate = sDate+"-"+String(iMonth);
+  }
+  if(iDate < 10)
+  {
+    sDate = sDate+"-0"+String(iDate);
+  }
+  else
+  {
+    sDate = sDate+"-"+String(iDate);
+  }
+  if(ihour < 10)
+  {
+    sDate = sDate+" 0"+String(ihour);
+  }
+  else
+  {
+    sDate = sDate + " " + String(ihour);
+  }
+  if(iminute < 10)
+  {
+    sDate = sDate+":0"+String(iminute);
+  }
+  else
+  {
+    sDate = sDate + ":" + String(iminute);
+  }
+  if(sec < 10)
+  {
+    sec = String(sec);
+    sec = "0" + sec;
+  }
+  else
+  {
+    sec = String(sec);
+  }
+  sDate = sDate+":"+sec;
+  return sDate;
+}
+
+
+function addHours(hours)
+{
+    var date = new Date();
+    hours = parseInt(hours);
+    var interTimes = hours * 60 * 60 * 1000;
+    interTimes = parseInt(interTimes);
+    var newDate = new Date(Date.parse(date)+interTimes);
+    var formatDate = JFormatDatepmz(newDate);
+    return formatDate;
+}
+
+function createBlacklistTable()
+{
+    var table = document.createElement("table");
+    table.setAttribute("id", "customers");
+//    alert(forbidReasonInfo['forbidIndex'].length);
+    var tr = document.createElement("TR");
+    var th0 = document.createElement("TH");
+    th0.setAttribute("width", "20");
+    var th1 = document.createElement("TH");
+    th1.setAttribute("width", "120");
+    th1.innerText = "角色ID";
+    var th2 = document.createElement("TH");
+    th2.setAttribute("width", "400");
+    th2.innerText = "封禁原因";
+    var th3 = document.createElement("TH");
+    th3.setAttribute("width", "100");
+    th3.innerText = "封禁到期时间";
+    tr.appendChild(th0);
+    tr.appendChild(th1);
+    tr.appendChild(th2);
+    tr.appendChild(th3);
+    table.appendChild(tr);
+
+    for(var i = 0; i < blacklist['userid'].length; i++)
+    {
+        var tr = document.createElement("TR");
+        var td0 = document.createElement("TD");
+        td0.setAttribute("width", "20");
+        td0.setAttribute("align", "center");
+        td0.innerHTML = '<input type = "radio" name = "releaseButton" id = "releaseButton" value = "解除封禁" />';
+        var td1 = document.createElement("TD");
+        td1.setAttribute("width", "120");
+        td1.innerText = blacklist['userid'][i];
+        var td2 = document.createElement("TD");
+        td2.setAttribute("width", "400");
+        var forbidReason = getForbidReason(blacklist['forbidReasonIndex'][i]);
+        td2.innerText = forbidReason;
+        var td3 = document.createElement("TD");
+        td3.setAttribute("width", "100");
+//        td3.innerText = blacklist['forbidTime'][i];
+        var newDate = new Date(blacklist['forbidTime'][i] * 1000);
+        var formatDate = JFormatDatepmz(newDate);
+        td3.innerText = formatDate;
+        tr.appendChild(td0);
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        tr.appendChild(td3);
+        table.appendChild(tr);
+    }
+
+    var tablediv = document.getElementById('blacklistTable');
+    tablediv.appendChild(table);
+    return;
+};
+
+function cell()
+{
+   var x=document.getElementById('customers').rows[0].cells;
+};
+
+function addRow(playerID, reason, hours)
+{
+   if("" == playerID)
+   {
+       alert("请填入角色ID");
+       return;
+   }
+   if("" == reason)
+   {
+       alert("请选择封禁原因");
+       return;
+   }
+   if("" == hours)
+   {
+       alert("请填写封禁时长");
+       return;
+   }
+   var table = document.getElementById('customers');
+   var tr = document.createElement("TR");
+   var td0 = document.createElement("TD");
+   td0.setAttribute("width", "20");
+   td0.setAttribute("align", "center");
+   td0.innerHTML = '<input type = "radio" name = "checkbox0" value = "解除封禁" />';
+   var td1 = document.createElement("TD");
+   td1.setAttribute("width", "120");
+   td1.innerText = playerID;
+   var td2 = document.createElement("TD");
+   td2.setAttribute("width", "400");
+   td2.innerText = reason;
+   var td3 = document.createElement("TD");
+   td3.setAttribute("width", "100");
+   var newDate = addHours(hours);
+   td3.innerText = newDate;
+   tr.appendChild(td0);
+   tr.appendChild(td1);
+   tr.appendChild(td2);
+   tr.appendChild(td3);
+   table.appendChild(tr);
+};
+
+function reduceRow()
+{
+   var tb = document.getElementById("customers");
+   if(tb.rows.length < 2)
+   {
+       return;
+   }
+
+   var row;
+   var cell;
+   var chk;
+   for(var i = tb.rows.length - 1; i > 0; i--)
+   {
+       row = tb.rows[i];//迭代当前行
+       cell = row.cells[0];//复选框所在的单元格
+       radio = cell.getElementsByTagName("input")[0];//为单元格中第几个INPUT元素
+       if(radio.checked)
+       {//如果选中
+           tb.deleteRow(i);//删除改行
+       }
+   } 
+};
+
+var hours = 72;
+var seconds = hours * 60 * 60
+function downTimer()
+{
+   seconds = seconds - 1;
+   var d = Math.floor(seconds/60/60/24);
+   var h = Math.floor(seconds/60/60%24);
+   var m = Math.floor(seconds/60%60);
+   var s = Math.floor(seconds%60);
+   
+   var x=document.getElementById('customers').rows[1].cells;
+   x[3].innerHTML = d + '天-' + h + ':' + m + ':' + s;
+};
+
+
+
+$$(document).ready(function()
+{  
+//   setInterval("downTimer()", 1000);
+   $:getURL();
+   $$("body").bind("click",function()
+   { 
+       $$(".selectReasonListView").hide();
+   });
+
+   $$("p#GMServer").next("div.leftMenuBody").show();
+   $$("a#forbidLogin").css("color","#AFEEEE");
+
+   $$(".selectReasonView").click(function()
+   {
+     $$(".selectReasonListView").slideToggle();
+   });
+   $$("ul.selectReasonListView").children().click(function(){
+       var liText = $$(this).text();
+       $$(".selectReasonView").val(liText);
+       $$(".selectReasonListView").hide();
+   });
+   $$("#forbidButton").click(function()
+   {
+       var playerID = $$("#playerID").val();
+       var hours = $$("#forbidTime").val();
+       var reason = $$("#forbidReason").val();
+       addRow(playerID, reason, hours);
+       $$("#playerID").val("");
+       $$("#forbidTime").val("");
+       $$("#forbidReason").val("");
+
+       $$.post(url, {userid:playerID, forcetime:hours, forbidReason:reason},
+       function(data)
+       {
+          alert(data);
+//          addRow(playerID, reason, hours);
+//          $$("#playerID").val("");
+//          $$("#forbidTime").val("");
+//          $$("#forbidReason").val("");
+       });
+//       $$.post("/testPost?name=" + dateString);
+   });
+   
+   $$("#releaseButton").click(function()
+   {
+       reduceRow();
+   });
+
+   $:initForbidReasonInfo();
+   $:initBlacklistArray();
+   createBlacklistTable();
+});
+
+</script>
+</head>
+    $def forbidReasonList():
+        <ul class = selectReasonListView>
+            $for i in range(len(forbidReasonDic)):
+            <li>$(forbidReasonDic[i][1])</li>
+        </ul>
+
+    $def blackListTable():
+        <table id = customers>
+            <tr>
+            <th width = "20"></th>
+            <th width = "120">角色ID</th>
+            <th width = "400">封禁原因</th>
+            <th width = "100">剩余时间</th>
+            </tr>
+            $for blackListInfo in blacklistCursor:
+                <tr>
+                <td width = "20" align = "center"><input type = "checkbox" name = "checkbox0" value = "checkbox" /></td>
+                <td width = "120">$blackListInfo['userid']</td>
+                <td width = "400">$blackListInfo['forbidReason']</td>
+                <td width = "100">$blackListInfo['forcetime']</td>
+                </tr>
+        </table>
+
+    
+    $ tableTitle = "%s%s%s"%("禁止登录(服务器:", confDic[serverID][0][1], ")")
+    <body> 
+       $:render.base() 
+        <div class = contentView>
+            $:render.leftMenu(0, 0, serverID)
+          <div class = rightContentView>
+            $:render.analyseOption(confDic[serverID][0][1])
+            <div>
+            <h2 class = rightTableTitle>$tableTitle</h2>
+            <div class = rightOption>
+               <!-- <form action = "" method = "post">-->
+                    <div>
+                    角色ID:
+                    <input type = "text" id = playerID class = selectValueView name = "playerID"  value = "">
+                    封禁时长:
+                    <input type = "text" id = forbidTime class = selectHourValueView name = "forbinTime"  value = "">
+                    小时
+                    封禁原因:
+                    <input type = "text" id = forbidReason class = selectReasonView name = "forbinReason" readonly = "true" value = "">
+                    <!--
+                    <div id = reasonView>
+                    <div class = addReasonView>
+                        <input type = "text" id = addReasonText class = addReasonText name = "addReasonText" value = "">
+                        <input type = "button" id = addReasonButton class = addButton name = "addReasonButton" value = "添加原因">
+                    </div>
+                    <ul class = selectReasonListView>
+                       <li>原因1</li>
+                       <li>原因2</li>
+                    </ul>
+                    </div>
+                    -->
+                    $:forbidReasonList()
+                    <input type = "button" id = forbidButton class = submitView name = "forbidButton" value = "封禁">
+                    </div>
+               <!-- </form>-->
+            </div>
+           
+            <form>
+            <h2 class = rightTableTitle>封禁角色列表    
+            <input type = "button" id = releaseButton class = submitCancleView name = "releaseButton" value = "解除封禁">
+            </h2>
+            <div id = blacklistTable></div>
+            </form>
+            </div>
+            </div>
+          </div>
+        </div>
+    </body>
+</html>

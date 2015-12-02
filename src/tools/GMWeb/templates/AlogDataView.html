@@ -1,0 +1,273 @@
+﻿$def with(logArray)
+<!DOCTYPE html>
+<html>
+<head>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type = "text/javascript" src = "/static/js/GMWebQuery.js"></script>
+<script src = "/static/js/Chart.js"></script>
+<script type = "text/javascript">
+
+var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
+var lineChartData = {
+                        labels : [],
+                        datasets : [
+                                {
+                                        label: "logInCount dataset",
+                                        fillColor : "rgba(151,187,205,0.1)",
+                                        strokeColor : "rgba(138,43,226,1)",
+                                        pointColor : "rgba(138,43,226,1)",
+                                        pointStrokeColor : "#fff",
+                                        pointHighlightFill : "#fff",
+                                        pointHighlightStroke : "rgba(138,43,226,1)",
+                                        data : []
+                                },
+                                {
+					label: "onlineCount dataset",
+					fillColor : "rgba(151,187,205,0.1)",
+					strokeColor : "rgba(51,161,0,1)",
+					pointColor : "rgba(51,161,0,1)",
+					pointStrokeColor : "#fff",
+					pointHighlightFill : "#fff",
+					pointHighlightStroke : "rgba(51,161,0,1)",
+					data : []
+				},
+                                {
+					label: "registerCount dataset",
+					fillColor : "rgba(151,187,205,0.1)",
+					strokeColor : "rgba(255,143,15,1)",
+					pointColor : "rgba(255,143,15,1)",
+					pointStrokeColor : "#fff",
+					pointHighlightFill : "#fff",
+					pointHighlightStroke : "rgba(255,143,15,1)",
+					data : []
+				}
+                        ]};
+var obj0 = {
+               label: "logInCount dataset",
+               fillColor : "rgba(151,187,205,0.1)",
+               strokeColor : "rgba(138,43,226,1)",
+               pointColor : "rgba(138,43,226,1)",
+               pointStrokeColor : "#fff",
+               pointHighlightFill : "#fff",
+               pointHighlightStroke : "rgba(138,43,226,1)",
+               data : []
+           };
+var obj1 = {
+                                        label: "onlineCount dataset",
+                                        fillColor : "rgba(151,187,205,0.1)",
+                                        strokeColor : "rgba(51,161,0,1)",
+                                        pointColor : "rgba(51,161,0,1)",
+                                        pointStrokeColor : "#fff",
+                                        pointHighlightFill : "#fff",
+                                        pointHighlightStroke : "rgba(51,161,0,1)",
+                                        data : []
+                                };
+var obj2 = {
+                                        label: "registerCount dataset",
+                                        fillColor : "rgba(151,187,205,0.1)",
+                                        strokeColor : "rgba(255,143,15,1)",
+                                        pointColor : "rgba(255,143,15,1)",
+                                        pointStrokeColor : "#fff",
+                                        pointHighlightFill : "#fff",
+                                        pointHighlightStroke : "rgba(255,143,15,1)",
+                                        data : []
+                                }
+
+$def initLineChartPY():
+     $for loginInfo in logArray:
+         $ currDate = loginInfo['index']
+         $ logCount = loginInfo['logCount']
+         $ registerCount = loginInfo['registerCount']
+         $ onlineCount = loginInfo['onlineCount']
+         lineChartData['labels'].push('$currDate')
+         lineChartData['datasets'][0]['data'].push('$logCount')
+         obj0['data'].push('$logCount')
+         lineChartData['datasets'][1]['data'].push('$onlineCount')
+         obj1['data'].push('$onlineCount')
+         lineChartData['datasets'][2]['data'].push('$registerCount')
+         obj2['data'].push('$registerCount')
+
+function initLineChartJS()
+{
+   lineChartData['labels'].push('12');
+   
+   lineChartData['labels'].push('19');
+   lineChartData['labels'].push('18');
+   lineChartData['datasets'][0]['data'][1] = 6;
+   lineChartData['datasets'][0]['data'][0] = 5;
+   lineChartData['datasets'][0]['data'][2] = 4;
+
+};
+
+Array.prototype.remove=function(obj)
+{ 
+   for(var i =0;i <this.length;i++)
+   { 
+       var temp = this[i]; 
+       if(!isNaN(obj))
+       { 
+           temp=i; 
+       } 
+       if(temp == obj)
+       { 
+           for(var j = i;j <this.length;j++)
+           { 
+               this[j]=this[j+1]; 
+           } 
+           this.length = this.length-1; 
+       }  
+   } 
+} 
+
+function getPos(arr, value)
+{
+    for(var i = 0,vlen = arr.length; i < vlen; i++)
+    { 
+        if(arr[i] == value)
+        { 
+            return i; 
+        } 
+    } 
+    return -1; 
+}
+
+$$(document).ready(function()
+{
+   $$("#hourSelectLI").css("color","#AFEEEE");   
+   $$("#hourSelectLI").click(function(){
+     $$("#dateSelectLI").css("color","#FFFFFF");
+     $$("#hourSelectLI").css("color","#AFEEEE");
+   });
+   $$("#dateSelectLI").click(function(){
+     $$("#hourSelectLI").css("color","#FFFFFF");
+     $$("#dateSelectLI").css("color","#AFEEEE");
+   });
+
+   $:initLineChartPY();
+   ctx = document.getElementById("canvas").getContext("2d");
+   window.myline = new Chart(ctx).Line(lineChartData, {responsive: true});
+   
+     var state0 = 1;
+     var state1 = 1;
+     var state2 = 1;
+     var posArray = ["pos0", "pos1", "pos2"];
+
+     $$("#colorExplain0").click(function(){
+          if(1 == state0)
+          {
+              document.getElementById("colorExplain0").style.color = '#F9F9F9';
+              document.getElementById("circle0").style.background = '#f9f9f9';
+              state0 = 0;
+              var pos = getPos(posArray, "pos2");
+              lineChartData['datasets'].remove(pos);
+              posArray.remove(pos);
+              window.myline = new Chart(ctx).Line(lineChartData, {responsive: true});         
+          }
+          else if(0 == state0)
+          {
+              lineChartData['datasets'].push(obj2);
+              posArray.push("pos2");
+              window.myline = new Chart(ctx).Line(lineChartData, {responsive: true});
+              document.getElementById("colorExplain0").style.color = '#FF8F0F';
+              document.getElementById("circle0").style.background = '#FF8F0F';
+              state0 = 1;
+          }
+     });
+
+     $$("#colorExplain1").click(function(){
+          if(1 == state1)
+          {
+              document.getElementById("colorExplain1").style.color = '#F9F9F9';
+              document.getElementById("circle1").style.background = '#f9f9f9';
+              state1 = 0;
+              var pos = getPos(posArray, "pos1");
+              lineChartData['datasets'].remove(pos);
+              posArray.remove(pos);
+              window.myline = new Chart(ctx).Line(lineChartData, {responsive: true});
+          }
+          else if(0 == state1)
+          {
+              lineChartData['datasets'].push(obj1);
+              posArray.push("pos1");
+              window.myline = new Chart(ctx).Line(lineChartData, {responsive: true});
+              document.getElementById("colorExplain1").style.color = '#33A100';
+              document.getElementById("circle1").style.background = '#33A100';
+              state1 = 1;
+          }
+     })
+
+     $$("#colorExplain2").click(function(){
+          if(1 == state2)
+          {
+              document.getElementById("colorExplain2").style.color = '#F9F9F9';
+              document.getElementById("circle2").style.background = '#f9f9f9';
+              state2 = 0;
+              var pos = getPos(posArray, "pos0");
+              lineChartData['datasets'].remove(pos);
+              posArray.remove(pos);
+              window.myline = new Chart(ctx).Line(lineChartData, {responsive: true});
+          }
+          else if(0 == state2)
+          {
+              lineChartData['datasets'].push(obj0);
+              posArray.push("pos0");
+              window.myline = new Chart(ctx).Line(lineChartData, {responsive: true});
+              document.getElementById("colorExplain2").style.color = '#8A2BE2';
+              document.getElementById("circle2").style.background = '#8A2BE2';
+              state2 = 1;
+          }
+     })
+
+});
+
+</script>
+</head>
+   
+     $def tr(logArray):
+          $for loginInfo in logArray: 
+               <tr>
+               <td>$loginInfo['index']</td>
+               <td>$loginInfo['registerCount']</td>
+               <td>$loginInfo['logCount']</td>
+               <td>$loginInfo['onlineCount']</td>
+               </tr>
+
+    <body>
+            <div>
+               <div class = divCanvas>
+               <div>
+               <h2 class = rightTableTitle>用户趋势</h2>  
+<!--
+               <ul class = timeSelectUL>
+               <li id = hourSelectLI>小时</li>
+               <li id = dateSelectLI>天</li>
+               <li id = monthSelectLI>月</li>
+               </ul>
+-->
+               </div>
+               <div style = "margin-top:30px">
+               <canvas id = "canvas" height = "60" width = "200"></canvas>
+
+               <p id = circle0></p>
+               <p id = colorExplain0>本日登录新帐号</p>
+               <p id = circle1></p>
+               <p id = colorExplain1>当前在线人数</p>
+               <p id = circle2></p>
+               <p id = colorExplain2>本日登录帐号总数</p>
+
+<!--               <table id = customers>
+               <tr>
+               <th>日期</th>
+               <th>本日登录新帐号数</th>
+               <th>本日登录帐号总数</th>
+               <th>当前在线人数</th>
+               </tr>
+               $:tr(logArray)  
+               </table>
+-->
+               </div>
+               </div>
+               
+            </div>
+    </body>
+</html>

@@ -1,0 +1,68 @@
+﻿$def with(saveInfoList)
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type = "text/javascript" src = "/static/js/GMWebQuery.js"></script>
+<script type = "text/javascript">
+
+</script>
+</head>
+    $def tr(saveInfoList):
+        $if(0 != saveInfoList):
+            $ saveRate = 0
+            $for saveInfo in saveInfoList:
+                <tr background-color:#AFEEEE>
+                <td>$saveInfo['date']</td>
+                <td>$saveInfo['registerCount']</td>
+                $if -1 != saveInfo['2']:
+                    $ saveRate = saveInfo['2'] * 100
+                    <td>$saveRate%</td>
+                $if -1 != saveInfo['3']:
+                    $ saveRate = saveInfo['3'] * 100
+                    <td>$saveRate%</td>
+                $if -1 != saveInfo['4']:
+                    $ saveRate = saveInfo['4'] * 100
+                    <td>$saveRate%</td>
+                $if -1 != saveInfo['5']:
+                    $ saveRate = saveInfo['5'] * 100
+                    <td>$saveRate%</td>
+                $if -1 != saveInfo['6']:
+                    $ saveRate = saveInfo['6'] * 100
+                    <td>$saveRate%</td>
+                $if -1 != saveInfo['7']:
+                    $ saveRate = saveInfo['7'] * 100
+                    <td>$saveRate%</td>
+                $if -1 != saveInfo['14']:
+                    $ saveRate = saveInfo['14'] * 100
+                    <td>$saveRate%</td>
+                $if -1 != saveInfo['28']:
+                    $ saveRate = saveInfo['28'] * 100
+                    <td>$saveRate%</td>
+                $if -1 != saveInfo['56']:
+                    $ saveRate = saveInfo['56'] * 100
+                    <td>$saveRate%</td>
+                </tr>
+    <body> 
+            
+               <table id = savecustomers>
+               <tr>
+               <th>日期</th>
+               <th>新增用户</th>
+               <th>次日</th>
+               <th>三日</th>
+               <th>四日</th>
+               <th>五日</th>
+               <th>六日</th>
+               <th>七日</th>
+               <th>14日</th>
+               <th>四周</th>
+               <th>八周</th>
+               </tr>
+               $:tr(saveInfoList)
+               </table>
+            
+    </body>
+</html>

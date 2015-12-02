@@ -1,0 +1,514 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{417996FF-10E1-442B-89EA-2427E0DEB4F3}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>libmessage</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)../libs</OutDir>
+    <IntDir>$(ProjectDir)../../../intermediate/$(ProjectName)/$(Configuration)\</IntDir>
+    <TargetName>x64$(ProjectName)D</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBMESSAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>..\..\..\server\external\protobuf\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LIBMESSAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>..\..\..\server\external\protobuf\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../../../server/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobufD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBMESSAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBMESSAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\MesagePlayerCitySync.pb.h" />
+    <ClInclude Include="..\source\MessageArenaChallenge.pb.h" />
+    <ClInclude Include="..\source\MessageArenaChallengeKnight.pb.h" />
+    <ClInclude Include="..\source\MessageArenaChangeOpp.pb.h" />
+    <ClInclude Include="..\source\MessageArenaKnightAppear.pb.h" />
+    <ClInclude Include="..\source\MessageArenaPlayerData.pb.h" />
+    <ClInclude Include="..\source\MessageArenaPlayerDataRequest.pb.h" />
+    <ClInclude Include="..\source\MessageArenaRefresh.pb.h" />
+    <ClInclude Include="..\source\MessageArenaReward.pb.h" />
+    <ClInclude Include="..\source\MessageArenaSyncData.pb.h" />
+    <ClInclude Include="..\source\MessageAttackMonsterRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleAttackRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleBuyActionRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleBuyTimeRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleDefendRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleDialyRewardGetRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleDoubleWinRankingRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleDoubleWinRankingResponse.pb.h" />
+    <ClInclude Include="..\source\MessageBattleInitNotify.pb.h" />
+    <ClInclude Include="..\source\MessageBattleJoinerNotify.pb.h" />
+    <ClInclude Include="..\source\MessageBattleJoinRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleMoveRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleRankingRewardGetRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleSingleRewardDoubleRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleSingleRewardGetRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleSingleRewardNotify.pb.h" />
+    <ClInclude Include="..\source\MessageBattleWinnerNotify.pb.h" />
+    <ClInclude Include="..\source\MessageBattleWinnerRewardGetRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleWpinfoRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBattleWpinfoResponse.pb.h" />
+    <ClInclude Include="..\source\MessageBossAttackRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBossAttackResponse.pb.h" />
+    <ClInclude Include="..\source\MessageBossCooldownRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBossCooldownResponse.pb.h" />
+    <ClInclude Include="..\source\MessageBossInfoNotify.pb.h" />
+    <ClInclude Include="..\source\MessageBossInspireRequest.pb.h" />
+    <ClInclude Include="..\source\MessageBossInspireResponse.pb.h" />
+    <ClInclude Include="..\source\MessageBossJoinRequest.pb.h" />
+    <ClInclude Include="..\source\MessageChat.pb.h" />
+    <ClInclude Include="..\source\MessageCheckNameRequest.pb.h" />
+    <ClInclude Include="..\source\MessageCheckNameResponse.pb.h" />
+    <ClInclude Include="..\source\MessageCityHelperNotify.pb.h" />
+    <ClInclude Include="..\source\MessageCityHelperRequest.pb.h" />
+    <ClInclude Include="..\source\MessageCityHelperSelectRequest.pb.h" />
+    <ClInclude Include="..\source\MessageCityParamsSync.pb.h" />
+    <ClInclude Include="..\source\MessageCityPrizzeRequest.pb.h" />
+    <ClInclude Include="..\source\MessageClientLogin.pb.h" />
+    <ClInclude Include="..\source\MessageCombatAward.pb.h" />
+    <ClInclude Include="..\source\MessageCombatReport.pb.h" />
+    <ClInclude Include="..\source\MessageCombatResult.pb.h" />
+    <ClInclude Include="..\source\MessageCombatStart.pb.h" />
+    <ClInclude Include="..\source\MessageConnectGate.pb.h" />
+    <ClInclude Include="..\source\MessageCreatePlayer.pb.h" />
+    <ClInclude Include="..\source\MessageDebugRequest.pb.h" />
+    <ClInclude Include="..\source\MessageDeletePlayer.pb.h" />
+    <ClInclude Include="..\source\MessageErrorNo.pb.h" />
+    <ClInclude Include="..\source\MessageEventSync.pb.h" />
+    <ClInclude Include="..\source\MessageExpandBagRequest.pb.h" />
+    <ClInclude Include="..\source\MessageFightAward.pb.h" />
+    <ClInclude Include="..\source\MessageFormatDebutNotify.pb.h" />
+    <ClInclude Include="..\source\MessageFormatDebutRequest.pb.h" />
+    <ClInclude Include="..\source\MessageFormatInfoNotify.pb.h" />
+    <ClInclude Include="..\source\MessageFormatUpRequest.pb.h" />
+    <ClInclude Include="..\source\MessageFormatUpResponse.pb.h" />
+    <ClInclude Include="..\source\MessageFriend.pb.h" />
+    <ClInclude Include="..\source\MessageFriends.pb.h" />
+    <ClInclude Include="..\source\MessageFriendsDataRequest.pb.h" />
+    <ClInclude Include="..\source\MessageFriendsDataResponse.pb.h" />
+    <ClInclude Include="..\source\MessageFriendsSync.pb.h" />
+    <ClInclude Include="..\source\MessageFriendsSyncToData.pb.h" />
+    <ClInclude Include="..\source\MessageGuestCheck.pb.h" />
+    <ClInclude Include="..\source\MessageHeroAttrI64Notify.pb.h" />
+    <ClInclude Include="..\source\MessageHeroAttrIntNotify.pb.h" />
+    <ClInclude Include="..\source\MessageHeroGainNotify.pb.h" />
+    <ClInclude Include="..\source\MessageHeroInheritRequest.pb.h" />
+    <ClInclude Include="..\source\MessageHeroInheritResponse.pb.h" />
+    <ClInclude Include="..\source\MessageHeroLeaveRequest.pb.h" />
+    <ClInclude Include="..\source\MessageHeroProgressRequest.pb.h" />
+    <ClInclude Include="..\source\MessageHeroQualityRequest.pb.h" />
+    <ClInclude Include="..\source\MessageHeroRecallRequest.pb.h" />
+    <ClInclude Include="..\source\MessageHeroRecruitRequest.pb.h" />
+    <ClInclude Include="..\source\MessageIntensifyCrystalRequest.pb.h" />
+    <ClInclude Include="..\source\MessageIntensifyCrystalResponseFlag.pb.h" />
+    <ClInclude Include="..\source\MessageIntensifyJadeRequest.pb.h" />
+    <ClInclude Include="..\source\MessageIntensifyJadeResponseFlag.pb.h" />
+    <ClInclude Include="..\source\MessageIntensifyMithrilRequest.pb.h" />
+    <ClInclude Include="..\source\MessageItemDeleteResponse.pb.h" />
+    <ClInclude Include="..\source\MessageItemEquipRequest.pb.h" />
+    <ClInclude Include="..\source\MessageItemEquipResponse.pb.h" />
+    <ClInclude Include="..\source\MessageItemGainResponse.pb.h" />
+    <ClInclude Include="..\source\MessageItemInlayCrystalRequest.pb.h" />
+    <ClInclude Include="..\source\MessageItemInlayCrystalResponseFlag.pb.h" />
+    <ClInclude Include="..\source\MessageItemInlayJadeRequest.pb.h" />
+    <ClInclude Include="..\source\MessageItemIntensifyRequest.pb.h" />
+    <ClInclude Include="..\source\MessageItemIntensifyResponseFlag.pb.h" />
+    <ClInclude Include="..\source\MessageItemSellRequest.pb.h" />
+    <ClInclude Include="..\source\MessageItemSlottingRequest.pb.h" />
+    <ClInclude Include="..\source\MessageItemSyncAttribI64.pb.h" />
+    <ClInclude Include="..\source\MessageItemSyncAttribInt.pb.h" />
+    <ClInclude Include="..\source\MessageItemSystem.pb.h" />
+    <ClInclude Include="..\source\MessageItemUnequipRequest.pb.h" />
+    <ClInclude Include="..\source\MessageItemUnequipResponse.pb.h" />
+    <ClInclude Include="..\source\MessageItemUpGradeRequest.pb.h" />
+    <ClInclude Include="..\source\MessageItemUpgradeResponseFlag.pb.h" />
+    <ClInclude Include="..\source\MessageItemUseRequest.pb.h" />
+    <ClInclude Include="..\source\MessageLoginActivityNotify.pb.h" />
+    <ClInclude Include="..\source\MessageLoginActivityRequest.pb.h" />
+    <ClInclude Include="..\source\MessageLoginActivityRespond.pb.h" />
+    <ClInclude Include="..\source\MessageLoginSession.pb.h" />
+    <ClInclude Include="..\source\MessageNetControl.pb.h" />
+    <ClInclude Include="..\source\MessageNetTestRequest.pb.h" />
+    <ClInclude Include="..\source\MessageNetTestResponse.pb.h" />
+    <ClInclude Include="..\source\MessageNotifySignInUnit.pb.h" />
+    <ClInclude Include="..\source\MessageObservePlayerRequest.pb.h" />
+    <ClInclude Include="..\source\MessageOrderRank.pb.h" />
+    <ClInclude Include="..\source\MessageOrderRequest.pb.h" />
+    <ClInclude Include="..\source\MessageOrderSyncData.pb.h" />
+    <ClInclude Include="..\source\MessagePlayerAttrib.pb.h" />
+    <ClInclude Include="..\source\MessagePlayerAttribI64.pb.h" />
+    <ClInclude Include="..\source\MessagePlayerAttribInt.pb.h" />
+    <ClInclude Include="..\source\MessagePlayerAttribName.pb.h" />
+    <ClInclude Include="..\source\MessagePlayerCount.pb.h" />
+    <ClInclude Include="..\source\MessagePlayerDataResponse.pb.h" />
+    <ClInclude Include="..\source\MessagePlayerInfo.pb.h" />
+    <ClInclude Include="..\source\MessagePlayerLoadOver.pb.h" />
+    <ClInclude Include="..\source\MessagePlayerLogin.pb.h" />
+    <ClInclude Include="..\source\MessagePlayerLogout.pb.h" />
+    <ClInclude Include="..\source\MessageRecastCrystalRequest.pb.h" />
+    <ClInclude Include="..\source\MessageRecastCrystalResponseFlag.pb.h" />
+    <ClInclude Include="..\source\MessageRegistServer.pb.h" />
+    <ClInclude Include="..\source\MessageReqPlayerData.pb.h" />
+    <ClInclude Include="..\source\MessageReSetChallengeCount.pb.h" />
+    <ClInclude Include="..\source\MessageRewardDirectNotify.pb.h" />
+    <ClInclude Include="..\source\MessageRewardNotify.pb.h" />
+    <ClInclude Include="..\source\MessageRewardRequest.pb.h" />
+    <ClInclude Include="..\source\MessageSignCompRespond.pb.h" />
+    <ClInclude Include="..\source\MessageSignExchangeRespond.pb.h" />
+    <ClInclude Include="..\source\MessageSignInSys.pb.h" />
+    <ClInclude Include="..\source\MessageSkillReset.pb.h" />
+    <ClInclude Include="..\source\MessageSkillSelect.pb.h" />
+    <ClInclude Include="..\source\MessageSkillSpec.pb.h" />
+    <ClInclude Include="..\source\MessageSoulSystem.pb.h" />
+    <ClInclude Include="..\source\MessageStarsActive.pb.h" />
+    <ClInclude Include="..\source\MessageStarsInfo.pb.h" />
+    <ClInclude Include="..\source\MessageStarsInlay.pb.h" />
+    <ClInclude Include="..\source\MessageStarsUnlay.pb.h" />
+    <ClInclude Include="..\source\MessageStarsUplevel.pb.h" />
+    <ClInclude Include="..\source\MessageStoreSystemBuyRequest.pb.h" />
+    <ClInclude Include="..\source\MessageStoreSystemLoadRequest.pb.h" />
+    <ClInclude Include="..\source\MessageStoreSystemLoadResponse.pb.h" />
+    <ClInclude Include="..\source\MessageSyncBuffer.pb.h" />
+    <ClInclude Include="..\source\MessageSyncGateLoad.pb.h" />
+    <ClInclude Include="..\source\MessageSyncObjField.pb.h" />
+    <ClInclude Include="..\source\MessageSyncServer.pb.h" />
+    <ClInclude Include="..\source\MessageTaskAddNotify.pb.h" />
+    <ClInclude Include="..\source\MessageTaskDelNotify.pb.h" />
+    <ClInclude Include="..\source\MessageTaskFinishRequest.pb.h" />
+    <ClInclude Include="..\source\MessageTaskFinishResponse.pb.h" />
+    <ClInclude Include="..\source\MessageTaskResetRequest.pb.h" />
+    <ClInclude Include="..\source\MessageTaskResetResponse.pb.h" />
+    <ClInclude Include="..\source\MessageTaskSync.pb.h" />
+    <ClInclude Include="..\source\MessageTaskSyncToData.pb.h" />
+    <ClInclude Include="..\source\MessageTrainDoRequest.pb.h" />
+    <ClInclude Include="..\source\MessageTrainDoResponse.pb.h" />
+    <ClInclude Include="..\source\MessageTrainSaveRequest.pb.h" />
+    <ClInclude Include="..\source\MessageTrainSaveResponse.pb.h" />
+    <ClInclude Include="..\source\MessageTrainUnSaveRequest.pb.h" />
+    <ClInclude Include="..\source\MessageUnloadSoulRequest.pb.h" />
+    <ClInclude Include="..\source\MessageUserCheck.pb.h" />
+    <ClInclude Include="..\source\MessageUserDisplace.pb.h" />
+    <ClInclude Include="..\source\MessageUserHeartRequest.pb.h" />
+    <ClInclude Include="..\source\MessageUserHeartResponse.pb.h" />
+    <ClInclude Include="..\source\MessageUserKickout.pb.h" />
+    <ClInclude Include="..\source\MessageUserLogin.pb.h" />
+    <ClInclude Include="..\source\MessageUserLogout.pb.h" />
+    <ClInclude Include="..\source\MessageWorldDataRequest.pb.h" />
+    <ClInclude Include="..\source\MessageWorldDataResponse.pb.h" />
+    <ClInclude Include="..\source\MessageWorshiping.pb.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\MesagePlayerCitySync.pb.cc" />
+    <ClCompile Include="..\source\MessageArenaChallenge.pb.cc" />
+    <ClCompile Include="..\source\MessageArenaChallengeKnight.pb.cc" />
+    <ClCompile Include="..\source\MessageArenaChangeOpp.pb.cc" />
+    <ClCompile Include="..\source\MessageArenaKnightAppear.pb.cc" />
+    <ClCompile Include="..\source\MessageArenaPlayerData.pb.cc" />
+    <ClCompile Include="..\source\MessageArenaPlayerDataRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageArenaRefresh.pb.cc" />
+    <ClCompile Include="..\source\MessageArenaReward.pb.cc" />
+    <ClCompile Include="..\source\MessageArenaSyncData.pb.cc" />
+    <ClCompile Include="..\source\MessageAttackMonsterRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleAttackRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleBuyActionRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleBuyTimeRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleDefendRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleDialyRewardGetRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleDoubleWinRankingRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleDoubleWinRankingResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleInitNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleJoinerNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleJoinRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleMoveRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleRankingRewardGetRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleSingleRewardDoubleRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleSingleRewardGetRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleSingleRewardNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleWinnerNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleWinnerRewardGetRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleWpinfoRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBattleWpinfoResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageBossAttackRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBossAttackResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageBossCooldownRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBossCooldownResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageBossInfoNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageBossInspireRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageBossInspireResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageBossJoinRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageChat.pb.cc" />
+    <ClCompile Include="..\source\MessageCheckNameRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageCheckNameResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageCityHelperNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageCityHelperRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageCityHelperSelectRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageCityParamsSync.pb.cc" />
+    <ClCompile Include="..\source\MessageCityPrizzeRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageClientLogin.pb.cc" />
+    <ClCompile Include="..\source\MessageCombatAward.pb.cc" />
+    <ClCompile Include="..\source\MessageCombatReport.pb.cc" />
+    <ClCompile Include="..\source\MessageCombatResult.pb.cc" />
+    <ClCompile Include="..\source\MessageCombatStart.pb.cc" />
+    <ClCompile Include="..\source\MessageConnectGate.pb.cc" />
+    <ClCompile Include="..\source\MessageCreatePlayer.pb.cc" />
+    <ClCompile Include="..\source\MessageDebugRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageDeletePlayer.pb.cc" />
+    <ClCompile Include="..\source\MessageErrorNo.pb.cc" />
+    <ClCompile Include="..\source\MessageEventSync.pb.cc" />
+    <ClCompile Include="..\source\MessageExpandBagRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageFightAward.pb.cc" />
+    <ClCompile Include="..\source\MessageFormatDebutNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageFormatDebutRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageFormatInfoNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageFormatUpRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageFormatUpResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageFriend.pb.cc" />
+    <ClCompile Include="..\source\MessageFriends.pb.cc" />
+    <ClCompile Include="..\source\MessageFriendsDataRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageFriendsDataResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageFriendsSync.pb.cc" />
+    <ClCompile Include="..\source\MessageFriendsSyncToData.pb.cc" />
+    <ClCompile Include="..\source\MessageGuestCheck.pb.cc" />
+    <ClCompile Include="..\source\MessageHeroAttrI64Notify.pb.cc" />
+    <ClCompile Include="..\source\MessageHeroAttrIntNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageHeroGainNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageHeroInheritRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageHeroInheritResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageHeroLeaveRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageHeroProgressRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageHeroQualityRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageHeroRecallRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageHeroRecruitRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageIntensifyCrystalRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageIntensifyCrystalResponseFlag.pb.cc" />
+    <ClCompile Include="..\source\MessageIntensifyJadeRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageIntensifyJadeResponseFlag.pb.cc" />
+    <ClCompile Include="..\source\MessageIntensifyMithrilRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageItemDeleteResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageItemEquipRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageItemEquipResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageItemGainResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageItemInlayCrystalRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageItemInlayCrystalResponseFlag.pb.cc" />
+    <ClCompile Include="..\source\MessageItemInlayJadeRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageItemIntensifyRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageItemIntensifyResponseFlag.pb.cc" />
+    <ClCompile Include="..\source\MessageItemSellRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageItemSlottingRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageItemSyncAttribI64.pb.cc" />
+    <ClCompile Include="..\source\MessageItemSyncAttribInt.pb.cc" />
+    <ClCompile Include="..\source\MessageItemSystem.pb.cc" />
+    <ClCompile Include="..\source\MessageItemUnequipRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageItemUnequipResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageItemUpGradeRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageItemUpgradeResponseFlag.pb.cc" />
+    <ClCompile Include="..\source\MessageItemUseRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageLoginActivityNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageLoginActivityRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageLoginActivityRespond.pb.cc" />
+    <ClCompile Include="..\source\MessageLoginSession.pb.cc" />
+    <ClCompile Include="..\source\MessageNetControl.pb.cc" />
+    <ClCompile Include="..\source\MessageNetTestRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageNetTestResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageNotifySignInUnit.pb.cc" />
+    <ClCompile Include="..\source\MessageObservePlayerRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageOrderRank.pb.cc" />
+    <ClCompile Include="..\source\MessageOrderRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageOrderSyncData.pb.cc" />
+    <ClCompile Include="..\source\MessagePlayerAttrib.pb.cc" />
+    <ClCompile Include="..\source\MessagePlayerAttribI64.pb.cc" />
+    <ClCompile Include="..\source\MessagePlayerAttribInt.pb.cc" />
+    <ClCompile Include="..\source\MessagePlayerAttribName.pb.cc" />
+    <ClCompile Include="..\source\MessagePlayerCount.pb.cc" />
+    <ClCompile Include="..\source\MessagePlayerDataResponse.pb.cc" />
+    <ClCompile Include="..\source\MessagePlayerInfo.pb.cc" />
+    <ClCompile Include="..\source\MessagePlayerLoadOver.pb.cc" />
+    <ClCompile Include="..\source\MessagePlayerLogin.pb.cc" />
+    <ClCompile Include="..\source\MessagePlayerLogout.pb.cc" />
+    <ClCompile Include="..\source\MessageRecastCrystalRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageRecastCrystalResponseFlag.pb.cc" />
+    <ClCompile Include="..\source\MessageRegistServer.pb.cc" />
+    <ClCompile Include="..\source\MessageReqPlayerData.pb.cc" />
+    <ClCompile Include="..\source\MessageReSetChallengeCount.pb.cc" />
+    <ClCompile Include="..\source\MessageRewardDirectNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageRewardNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageRewardRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageSignCompRespond.pb.cc" />
+    <ClCompile Include="..\source\MessageSignExchangeRespond.pb.cc" />
+    <ClCompile Include="..\source\MessageSignInSys.pb.cc" />
+    <ClCompile Include="..\source\MessageSkillReset.pb.cc" />
+    <ClCompile Include="..\source\MessageSkillSelect.pb.cc" />
+    <ClCompile Include="..\source\MessageSkillSpec.pb.cc" />
+    <ClCompile Include="..\source\MessageSoulSystem.pb.cc" />
+    <ClCompile Include="..\source\MessageStarsActive.pb.cc" />
+    <ClCompile Include="..\source\MessageStarsInfo.pb.cc" />
+    <ClCompile Include="..\source\MessageStarsInlay.pb.cc" />
+    <ClCompile Include="..\source\MessageStarsUnlay.pb.cc" />
+    <ClCompile Include="..\source\MessageStarsUplevel.pb.cc" />
+    <ClCompile Include="..\source\MessageStoreSystemBuyRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageStoreSystemLoadRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageStoreSystemLoadResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageSyncBuffer.pb.cc" />
+    <ClCompile Include="..\source\MessageSyncGateLoad.pb.cc" />
+    <ClCompile Include="..\source\MessageSyncObjField.pb.cc" />
+    <ClCompile Include="..\source\MessageSyncServer.pb.cc" />
+    <ClCompile Include="..\source\MessageTaskAddNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageTaskDelNotify.pb.cc" />
+    <ClCompile Include="..\source\MessageTaskFinishRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageTaskFinishResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageTaskResetRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageTaskResetResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageTaskSync.pb.cc" />
+    <ClCompile Include="..\source\MessageTaskSyncToData.pb.cc" />
+    <ClCompile Include="..\source\MessageTrainDoRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageTrainDoResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageTrainSaveRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageTrainSaveResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageTrainUnSaveRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageUnloadSoulRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageUserCheck.pb.cc" />
+    <ClCompile Include="..\source\MessageUserDisplace.pb.cc" />
+    <ClCompile Include="..\source\MessageUserHeartRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageUserHeartResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageUserKickout.pb.cc" />
+    <ClCompile Include="..\source\MessageUserLogin.pb.cc" />
+    <ClCompile Include="..\source\MessageUserLogout.pb.cc" />
+    <ClCompile Include="..\source\MessageWorldDataRequest.pb.cc" />
+    <ClCompile Include="..\source\MessageWorldDataResponse.pb.cc" />
+    <ClCompile Include="..\source\MessageWorshiping.pb.cc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

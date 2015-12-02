@@ -1,0 +1,40 @@
+package Message; 
+
+//同步GameObj属性
+message SyncAttrs {
+    optional int64  id      = 1;    //identify
+    optional string type    = 2;    //obj type
+    optional string key     = 3;    //field key
+    optional string mapkey  = 4;    //map key
+    optional string jsonstr = 5;    //field json string
+} 
+
+//同步GameObj属性
+message SyncAttrsObjField {
+    optional int64  id      = 1;    //identify
+    optional string type    = 2;    //obj type
+    optional string group   = 3;    //group key
+    optional string field   = 4;    //field key
+    optional int32  vali32  = 5;    //int field
+    optional int64  vali64  = 6;    //int64 field
+    optional string valstr  = 7;    //string field
+} 
+
+//同步GameObj属性
+message SyncAttrsMapField {
+    optional int64  id      = 1;    //identify
+    optional string type    = 2;    //obj type
+    optional string group   = 3;    //group key
+    optional string mapkey  = 4;    //map key
+    optional string field   = 5;    //field key
+    optional int32  vali32  = 6;    //int field
+    optional int64  vali64  = 7;    //int64 field
+    optional string valstr  = 8;    //string field
+} 
+
+//向数据中心请求角色数据
+message ReqPlayerData { 
+    optional int64  pid     = 1;    //角色ID
+    optional string type    = 2;
+    optional string key     = 3;
+} 

@@ -1,0 +1,47 @@
+package Message;
+
+//注册服务器
+message RegistServer {
+    optional int32  id      = 1;    //服务程序ID 
+    optional int32  type    = 2;    //服务程序类型
+    optional int32  port    = 3;    //服务程序端口
+    optional string ip      = 4;    //服务程序ip
+    optional int32  extport = 5;    //外网端口
+    optional string extip   = 6;    //外网ip
+    optional int32  world   = 7;    //区服编号
+} 
+
+//通知服务程序去连接其它服务器
+message SyncServer { 
+    optional int32  id      = 1;    //服务程序ID 
+    optional int32  type    = 2;    //服务程序类型
+    optional int32  port    = 3;    //服务程序端口
+    optional string ip      = 4;    //服务程序ip
+    optional int32  extport = 5;    //外网端口
+    optional string extip   = 6;    //外网ip
+    optional int32  world   = 7;    //区服编号
+} 
+
+//同步负载信息
+message SyncLoadNumber { 
+    optional int32  server  = 1;    //服务程序ID 
+    optional int32  count   = 2;    //负载数量
+} 
+
+//请求加载游戏世界初始数据
+message WorldDataRequest { 
+    optional int32  world   = 1;    //区号
+    optional int32  server  = 2;    //服号
+} 
+
+//同步游戏世界初始数据
+message WorldDataResponse { 
+    optional int64  playerid= 1;    //玩家ID
+    optional int64  itemid  = 2;    //物品ID
+    optional int64  heroid  = 3;    //英雄ID
+} 
+
+message NetControl {
+    required int32 sock     = 1;
+    optional int32 error    = 2;
+}

@@ -1,0 +1,45 @@
+$def with()
+<head>
+<link rel = "stylesheet" type = "text/css" href = "/static/GMWebStyle.css"/>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type = "text/javascript">
+$$(document).ready(function()
+{ 
+     $$("p.leftMenuHead").click(function()
+     {
+       $$(this).next("div.leftMenuBody").slideToggle().siblings("div.leftMenuBody").slideUp();
+     });
+     $$("#selectServerName").click(function()
+     {
+       $$("ul.selectListView").slideToggle();
+     });
+     $$("ul.selectListView").children().click(function(){
+       var liText = $$(this).text();
+       $$("#selectServerName").val(liText);
+       $$("ul.selectListView").hide();
+     });     
+     $$("#selectType").click(function()
+     {
+       $$("ul.selectTypeListView").slideToggle();
+     })
+     $$("ul.selectTypeListView").children().click(function(){
+       var liText = $$(this).text();
+       $$("#selectType").val(liText);
+       $$("ul.selectTypeListView").hide();
+     }); 
+});            
+</script>
+</head>
+
+    <title>后台管理</title>
+    
+    <h1 class = "view">后台管理系统</h1>
+<!--
+        <ul class = topMenu>
+            <li><a href = "/" mce_href = "">注销</a></li>
+            $if cookie().get('username'):
+                <li><a href = "/new" mce_href = "new">切换用户</a></li>
+        </ul>
+-->        
+
+

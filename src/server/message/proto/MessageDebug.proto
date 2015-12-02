@@ -1,0 +1,12 @@
+package Message;
+
+message DebugRequest {
+    repeated string strings     = 1;
+    optional int64  pid         = 2;
+}
+
+message NetTestRequest {
+    required int32  no          = 1;
+    repeated int32  idata       = 2;
+    optional string sdata       = 3;
+}

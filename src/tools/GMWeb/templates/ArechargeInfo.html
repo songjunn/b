@@ -1,0 +1,55 @@
+﻿$def with(serverID, payInfos)
+<!DOCTYPE html>
+<html>
+<head>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type = "text/javascript" src = "/static/js/GMWebQuery.js"></script>
+<script type = "text/javascript">
+
+$$(document).ready(function()
+{ 
+     $$("p#index").next("div.leftMenuBody").show();
+     $$("a#rechargeInfo").css("color","#AFEEEE");
+});
+</script>
+</head>
+    $def tr(payInfos):
+        <table id = customers>
+        <tr>
+        <th>日期</th>
+        <th>登录用户数</th>
+        <th>付费用户数</th>
+        <th>付费次数</th>
+        <th>付费总金额</th>
+        <th>付费率</th>
+        <th>Arpu</th>
+        <th>Arppu</th>
+        </tr>
+        $if(0 != payInfos):
+            $for payInfo in payInfos:
+                <tr>
+                <td>$payInfo['date']</td>
+                <td>$payInfo['loginCount']</td>
+                <td>$payInfo['rechargeUserCount']</td>
+                <td>$payInfo['rechargeTimes']</td>
+                <td>$payInfo['currRechargeCount']</td>
+                <td>$payInfo['rechargeRate']</td>
+                <td>$payInfo['ARPU']</td>
+                <td>$payInfo['ARPPU']</td>
+                </tr>
+
+    $ tableTitle = "%s%s%s"%("付费统计(服务器:", confDic[serverID][0][1], ")")
+    <body> 
+       $:render.base() 
+        <div class = contentView>
+            $:render.leftMenu(0, 0, serverID)
+          <div class = rightContentView>
+            $:render.analyseOption(confDic[serverID][0][1])
+            <div>
+            <h2 class = rightTableTitle>$tableTitle</h2>
+          $:tr(payInfos)  
+          </div>
+          </div>
+        </div>
+    </body>
+</html>

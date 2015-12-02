@@ -1,0 +1,16 @@
+$def with(serverID)
+<html>
+     $ hrefLogInInfo = '%s%s%s'%("/userAnalyse/", serverID, "/logInInfo")
+     $ hrefRechargeUserInfo = '%s%s%s'%("/userAnalyse/", serverID, "/rechargeUserInfo")
+     $ hrefRechargeInfo = '%s%s%s'%("/userAnalyse/", serverID, "/rechargeInfo")
+     $ hrefSaveInfo = '%s%s%s'%("/userAnalyse/", serverID, "/saveInfo")      
+     <div class = leftMenuView>
+         <p class = leftMenuHead>用户分析</p>
+             <div class = leftMenuBody>
+                <a id = logInInfo href = $hrefLogInInfo>本日用户登录</a>
+		<a id = rechargeUserInfo href = $hrefRechargeUserInfo>本日充值用户</a>
+		<a id = rechargeInfo href = $hrefRechargeInfo>本日付费统计</a>
+                <a id = saveInfo href = $hrefSaveInfo>留存统计</a>
+	     </div>
+      </div>
+</html>

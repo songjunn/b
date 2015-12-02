@@ -1,0 +1,28 @@
+﻿$def with(rechargeUsersCursor)
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<script type = "text/javascript">
+
+        
+</script>
+</head>
+    
+    <body> 
+               <table id = customers>
+               <tr>
+               <th>帐号ID</th>
+               <th>充值金额</th>
+               <th>充值时间</th>
+               </tr>
+               $for rechargeUserInfo in rechargeUsersCursor:
+                   <tr>
+                   <td>$rechargeUserInfo['role']</td>
+                   <td>$rechargeUserInfo['param4']</td>
+                   <td>$rechargeUserInfo['time']</td>
+                   </tr>
+               </table>
+    </body>
+</html>

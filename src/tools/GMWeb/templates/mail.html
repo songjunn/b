@@ -1,0 +1,454 @@
+﻿$def with(serverID)
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<script type = "text/javascript" src = "/static/js/jquery.js"></script>
+<script type=  "text/javascript" src = "/static/js/dateTimejs/laydate.js"></script>
+<script type = "text/javascript">
+
+var urlArray = {serverName:[],serverID:[]};
+var intInterValTime = 0;
+var mailListObj = {1:"国战获胜奖励", 2:"国战排名奖励", 3:"竞技场奖励", 10:"世界boss排名奖励", 20:"国战占有路点个数奖励"}
+var serverID = "";
+var url = "";
+var mailTitleID = "";
+
+$def initURLArray():
+{
+    $for i in range(len(secs)):
+            $ serverName = confDic[secs[i]][0][1]
+            $ serverID = secs[i]
+            urlArray['serverName'].push('$serverName')
+            urlArray['serverID'].push('$serverID')
+}
+
+function JFormatDatepmz(strDate)
+{
+  var strPdate=strDate;
+  var iYear,iMonth,iDate,ihour,iminute,sec,sDate;
+  iYear=strPdate.getFullYear();
+  iMonth=strPdate.getMonth()+1;
+  iDate=strPdate.getDate();
+  ihour=strPdate.getHours();
+  iminute=strPdate.getMinutes();
+  sec = strPdate.getSeconds();
+  sDate=String(iYear);
+ 
+  if(iMonth < 10)
+  {
+    sDate = sDate + "-0" + String(iMonth); 
+  }
+  else
+  {
+    sDate = sDate+"-"+String(iMonth);
+  }
+  if(iDate < 10)
+  {
+    sDate = sDate+"-0"+String(iDate);
+  }
+  else
+  {
+    sDate = sDate+"-"+String(iDate);
+  }
+  if(ihour < 10)
+  {
+    sDate = sDate+" 0"+String(ihour);
+  }
+  else
+  {
+    sDate = sDate + " " + String(ihour);
+  }
+  if(iminute < 10)
+  {
+    sDate = sDate+":0"+String(iminute);
+  }
+  else
+  {
+    sDate = sDate + ":" + String(iminute);
+  }
+  if(sec < 10)
+  {
+    sec = String(sec);
+    sec = "0" + sec;
+  }
+  else
+  {
+    sec = String(sec);
+  }
+  sDate = sDate+":"+sec;
+  return sDate;
+}
+
+function createTimeInternal()
+{
+   var intervaldiv = document.getElementById('intervalID');
+   var _selectHour = document.createElement("select");
+   var _selectMinute = document.createElement("select");
+   var _selectSecond = document.createElement("select");
+   var _stringSpan0 = document.createElement("span");
+   var _stringSpan1 = document.createElement("span");
+   var _buttonOK = document.createElement("input");
+
+   _buttonOK.type = "button";
+   _buttonOK.value = "确定"; 
+   _buttonOK.setAttribute("class", "intervalButton");
+   _buttonOK.setAttribute("id", "intervalButton");
+   intervaldiv.setAttribute("float", "left");
+   _stringSpan0.innerHTML = ":";
+   _stringSpan0.setAttribute("float","left");
+   _stringSpan1.innerHTML = ":";
+   _stringSpan1.setAttribute("float","left");
+   _selectHour.setAttribute("id", "hour");
+   _selectMinute.setAttribute("id", "minute");
+   _selectSecond.setAttribute("id", "second");
+
+   for(i = 0; i < 24; i++)
+   {
+       var _option = document.createElement("option");
+       _option.value = i;
+       if(i < 10)
+       {
+           _option.text = "0" + i;
+       }
+       else
+       {
+           _option.text = i;
+       }
+       _selectHour.appendChild(_option);
+   }
+
+   for(i = 0; i < 60; i++)
+   {
+       var _option = document.createElement("option");
+       _option.value = i;
+       if(i < 10)
+       {
+           _option.text = "0" + i;
+       }
+       else
+       {
+           _option.text = i;
+       }
+       _selectMinute.appendChild(_option);
+   }
+
+
+   for(i = 0; i < 60; i++)
+   {
+       var _option = document.createElement("option");
+       _option.value = i;
+       if(i < 10)
+       {
+           _option.text = "0" + i;
+       }
+       else
+       {
+           _option.text = i;
+       }
+       _selectSecond.appendChild(_option);
+   }
+
+   intervaldiv.appendChild(_selectHour);
+   intervaldiv.appendChild(_stringSpan0);
+   intervaldiv.appendChild(_selectMinute);
+   intervaldiv.appendChild(_stringSpan1);
+   intervaldiv.appendChild(_selectSecond);
+   intervaldiv.appendChild(_buttonOK);
+}
+
+function get_URL(serverName)
+{
+    var selectURL = [];
+    if("全部" == serverName)
+    {
+        for(i in urlArray['url'])
+        {
+            selectURL.push(urlArray['url'][i]);
+        }
+    }
+    else
+    {
+        for(i in urlArray['serverName'])
+        {
+            if(serverName == urlArray['serverName'][i])
+            {
+                tempServerID = urlArray['serverID'][i];
+                selectURL.push(tempServerID);
+                break;
+            }
+        } 
+    }
+   
+    return selectURL;
+}
+
+function get_mailTitleID(mailTitle)
+{
+    var mailTitleID;
+    if("国战获胜奖励" == mailTitle)
+    {
+        mailTitleID = 1;
+    }
+    else if("国战排名奖励" == mailTitle)
+    {
+        mailTitleID = 2;
+    }
+    else if("竞技场奖励" == mailTitle)
+    {
+        mailTitleID = 3;
+    }
+    else if("世界boss排名奖励" == mailTitle)
+    {
+        mailTitleID = 10;
+    }
+    else if("国战占有路点个数奖励" == mailTitle)
+    {
+        mailTitleID = 20;
+    }
+    else if("加玩家群赢专属礼包" == mailTitle)
+    {
+        mailTitleID = 40;
+    }
+   
+    return mailTitleID;
+}
+
+$$(document).ready(function()
+{  
+   $:initURLArray();
+//   setInterval("downTimer()", 1000);
+   $$("body").bind("click",function()
+   { 
+       $$(".selectListView").hide();
+       $$(".mailTitleListView").hide();
+       $$(".searchConditonListView").hide();
+   });
+   
+   $$("p#GMServer").next("div.leftMenuBody").show();
+   $$("a#mail").css("color","#AFEEEE");
+
+   $$("ul.selectListView").children().click(function(){
+       var liText = $$(this).text();
+       var serverName = liText;
+       $$("#selectServerName").val(liText);
+       $$("ul.selectListView").hide();
+       var selectURL = get_URL(serverName);
+       serverID = selectURL[0];
+   });  
+
+   $$("#mailTitle").click(function()
+   {
+       $$(".mailTitleListView").slideToggle();
+   });
+
+   $$("#searchCondtion").click(function()
+   {
+       $$(".searchConditonListView").slideToggle();
+   });
+
+   $$("ul.mailTitleListView").children().click(function(){
+       var liText = $$(this).text();
+       $$("#mailTitle").val(liText);
+       $$("ul.mailTitleListView").hide();
+       mailTitleid = get_mailTitleID(liText);
+   });
+
+   $$("ul.searchConditonListView").children().click(function(){
+       var liText = $$(this).text();
+       $$("#searchCondtion").val(liText);
+       $$("ul.searchConditonListView").hide();
+   });
+   
+   $$("#searchButton").click(function()
+   {
+       var searchCondtionText = $$("#searchCondtion").val();
+       var searchText = $$("#search").val();
+       if("" == serverID)
+       {
+           alert("服务器选项不能为空!");
+           return;
+       }
+       if("" == searchText)
+       {
+           alert("查询条件不能为空!");
+           return;
+       }
+       if("按角色ID查询" == searchCondtionText)
+       {
+           $$("#divAjax").load('/mailPlayerList/' + serverID + "/0/" + searchText);
+       }
+       else if("按角色名称查询" == searchCondtionText)
+       {
+           $$("#divAjax").load('/mailPlayerList/' + serverID + "/1/" + searchText);
+       }
+   })
+
+   $$("#releaseButton").click(function()
+   {
+       var itemID = $$("#itemID").val();
+       var exps = $$("#exp").val();
+       var silvers = $$("#silver").val();
+       var golds = $$("#gold").val();
+       var credits = $$("#credit").val();
+       var aps = $$("#ap").val();
+       var merits = $$("#merit").val();
+       var knights = $$("#knight").val();
+       var x = document.getElementById('customers').rows[1].cells;
+       var playerid = x[1].innerHTML;
+       url = "/mailRetransmission";
+//       url = "/testPost";
+       $$.post(url, {serverId:serverID, playerId:playerid, mailtitle:mailTitleid, item:itemID, exp:exps, silver:silvers, gold:golds, credit:credits, ap:aps, merit:merits, knight:knights},
+       function(data)
+       {
+          if(1 == data)
+          {
+              alert("邮件发送成功!");
+              $$("#itemID").val("0");
+              $$("#exp").val("0");
+              $$("#silver").val("0");
+              $$("#gold").val("0");
+              $$("#credit").val("0");
+              $$("#ap").val("0");
+              $$("#merit").val("0");
+              $$("#knight").val("0");
+              $$("#search").val("");
+              document.getElementById('customers').deleteRow(1);
+          }
+          else if(2 == data)
+          {
+              alert("邮件发送失败!")
+          }
+          else if(0 == data)
+          {
+              alert("连接服务器失败!邮件发送失败!")
+          }
+       });
+
+//       url = url + "?mType=" + type + "&playerid=" + playerid + "&mailtitle=" + mailTitleid + "&item=" + itemID + "&exp=" + exps + "&silver=" + silvers + "&gold=" + golds + "&credit=" + credits + "&ap=" + aps + "&merit=" + merits + "&knight=" + knights; 
+       
+       return;
+   })
+
+});
+
+</script>
+</head>
+    $def serverInfoList():
+        <ul class = selectListView>
+        $for i in range(len(secs)):
+             $if 1 == (serverInfoDic[secs[i]]['serverState']):
+                 <li>$(confDic[secs[i]][0][1])</li>
+        </ul>
+
+    $ tableTitle = "系统邮件"
+    <body> 
+       $:render.base() 
+        <div class = contentView>
+            $:render.leftMenu(0, 0, serverID)
+          <div class = rightContentView>
+            <div>
+            <h2 class = rightTableTitle>$tableTitle</h2>
+            <div class = rightOption>
+               <div>
+               服务器选择:
+               <input type = "text" id = selectServerName class = selectView readonly = "true" name = "serverName"  value = "">
+               $:serverInfoList()
+               邮件主题:
+               <input type = "text" class = mailTitleView  id = "mailTitle" readonly = "true" value = "">
+               <input type = "text" class = searchConditionView id = "searchCondtion" name = "searchCondtion" readonly = "true" value = "按角色ID查询">
+               <input type = "text" class = search id = "search" name = "search" value = "">
+               <input type = "button" id = searchButton class = submitSearchView name = "searchButton"  value = "搜索">
+               </div>
+               <div>
+               道具ID:<input type = "text" id = itemID value = "0">
+               经验:<input type = "text" id = exp class = inputText value = "0">
+               银币:<input type = "text" id = silver class = inputText value = "0">
+               金币:<input type = "text" id = gold class = inputText value = "0">
+               声望:<input type = "text" id = credit class = inputText value = "0">
+               体力:<input type = "text" id = ap class = inputText value = "0">
+               战功:<input type = "text" id = merit class = inputText value = "0"><br>
+               位阶经验:<input type = "text" id = knight class = inputText value = "0">
+               </div>
+               <div>
+               <h2 class = rightTableTitle style="margin-left:-30px;">接受目标
+               <input type = "button" id = releaseButton class = submitCancleView name = "releaseButton" value = "确定">
+               </h2>
+               </div>
+               <div id = divAjax style="margin-left:-30px;font-size:0.8em"></div>
+            </div>
+            </div>
+          <div id = mailTitleList>
+          <ul class = mailTitleListView>
+<!--              <li>国战获胜奖励</li>
+              <li>国战排名奖励</li>
+              <li>竞技场奖励</li>
+              <li>世界boss排名奖励</li>
+              <li>国战占有路点个数奖励</li> -->
+              <li>加玩家群赢专属礼包</li>
+          </ul>
+          </div>
+          <div id = searchConditionList>
+          <ul class = searchConditonListView>
+<!--              <li>当前在线</li> -->
+              <li>按角色ID查询</li>
+              <li>按角色名称查询</li>
+          </ul>
+          </div>
+          </div>
+        </div>
+
+<script type="text/javascript">
+!function(){
+	laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+	laydate({elem: '#demo'});//绑定元素
+}();
+
+//日期范围限制
+var start = {
+    elem: '#start',
+    format: 'YYYY-MM-DD hh:mm:ss',
+    min: laydate.now(), //设定最小日期为当前日期
+    max: '2099-06-16', //最大日期
+    istime: true,
+    istoday: false,
+    choose: function(datas){
+         end.min = datas; //开始日选好后，重置结束日的最小日期
+         end.start = datas //将结束日的初始值设定为开始日
+    }
+};
+
+var end = {
+    elem: '#end',
+    format: 'YYYY-MM-DD hh:mm:ss',
+    min: laydate.now(),
+    max: '2099-06-16',
+    istime: true,
+    istoday: false,
+    choose: function(datas){
+        start.max = datas; //结束日选好后，充值开始日的最大日期
+    }
+};
+laydate(start);
+laydate(end);
+
+//自定义日期格式
+laydate({
+    elem: '#test1',
+    format: 'YYYY年MM月DD日',
+    festival: true, //显示节日
+    choose: function(datas){ //选择日期完毕的回调
+        alert('得到：'+datas);
+    }
+});
+
+//日期范围限定在昨天到明天
+laydate({
+    elem: '#hello3',
+    min: laydate.now(-1), //-1代表昨天，-2代表前天，以此类推
+    max: laydate.now(+1) //+1代表明天，+2代表后天，以此类推
+});
+</script>
+    </body>
+</html>
