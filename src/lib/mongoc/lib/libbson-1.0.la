@@ -5,10 +5,10 @@
 # It is necessary for linking the library.
 
 # The name that we can dlopen(3).
-dlname='libbson-1.0.so.0'
+dlname=''
 
 # Names of this library.
-library_names='libbson-1.0.so.0.0.0 libbson-1.0.so.0 libbson-1.0.so'
+library_names=''
 
 # The name of the static archive.
 old_library='libbson-1.0.a'
