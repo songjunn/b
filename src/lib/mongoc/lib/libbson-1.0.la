@@ -11,7 +11,7 @@ dlname='libbson-1.0.so.0'
 library_names='libbson-1.0.so.0.0.0 libbson-1.0.so.0 libbson-1.0.so'
 
 # The name of the static archive.
-old_library=''
+old_library='libbson-1.0.a'
 
 # Linker flags that can not go in dependency_libs.
 inherited_linker_flags=' -pthread'
@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/mnt/hgfs/project/src/mongoc/lib'
+libdir='/mnt/hgfs/project/opensrc/mongoc/lib'
