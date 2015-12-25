@@ -7,5 +7,5 @@ Name: libmongoc
 Description: The libmongoc MongoDB client library.
 Version: 1.2.1
 Requires: libbson-1.0
-Libs: -lsasl2   -lssl -lcrypto   -lrt -L${libdir} -lmongoc-1.0
+Libs:   -lrt -L${libdir} -lmongoc-1.0
 Cflags: -I${includedir}/libmongoc-1.0
