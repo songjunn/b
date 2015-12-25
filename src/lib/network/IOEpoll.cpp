@@ -4,7 +4,7 @@
 #include "IOEpoll.h"
 #include "SocketOps.h"
 #include "Net.h"
-#include "Logger.h"
+#include "logger.h"
 #include "memory.h"
 #include "NetMonitor.h"
 #include "NetObservable.h"

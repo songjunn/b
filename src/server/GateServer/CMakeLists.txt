@@ -23,6 +23,6 @@ aux_source_directory(${GATESERVER_SOURCE_DIR}/source SUB_SRC)
 add_executable(gateserver ${MAIN_SRC} ${SUB_SRC})
 
 #LINK LIBRARIES
-target_link_libraries(gateserver core rt curl shared network lua dl z crypt
-	protobuf message zlog pthread bson-1.0 mongoc-1.0 mongoc-priv)
+target_link_libraries(gateserver core rt curl shared network lua dl z protobuf 
+	message zlog pthread bson-1.0 mongoc-1.0 mongoc-priv)
 

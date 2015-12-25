@@ -1,4 +1,4 @@
-prefix=/mnt/hgfs/project/opensrc/mongoc
+prefix=/root/b/src/lib/mongoc
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${exec_prefix}/include

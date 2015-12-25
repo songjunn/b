@@ -23,6 +23,6 @@ aux_source_directory(${GAMESERVER_SOURCE_DIR}/source SUB_SRC)
 add_executable(gameserver ${MAIN_SRC} ${SUB_SRC})
 
 #LINK LIBRARIES
-target_link_libraries(gameserver core rt shared network lua dl z crypt
+target_link_libraries(gameserver core rt shared network lua dl z
   protobuf message zlog pthread bson-1.0 mongoc-1.0 mongoc-priv)
 
