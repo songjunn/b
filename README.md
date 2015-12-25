@@ -1,1 +1,1 @@
-# c++ server frameworks for game
+# c++ server framework for game
