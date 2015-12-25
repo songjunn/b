@@ -10,13 +10,13 @@ Sconf.WorldID                  = 99
 Sconf.CentralServer_ip         = "127.0.0.1"
 Sconf.DataServer_ip            = "127.0.0.1"
 Sconf.GateServer_ip            = "127.0.0.1"
-Sconf.GateServer_inetip        = "119.29.22.222"
+Sconf.GateServer_inetip        = "221.228.207.92"
 Sconf.LoginServer_ip           = "127.0.0.1"
-Sconf.LoginServer_inetip       = "119.29.22.222"
+Sconf.LoginServer_inetip       = "221.228.207.92"
 Sconf.BIServer_ip              = "127.0.0.1"
 Sconf.GameServer_ip            = "127.0.0.1"
 Sconf.PaymentServer_ip         = "127.0.0.1"
-Sconf.PaymentServer_inetip     = "127.0.0.1"
+Sconf.PaymentServer_inetip     = "221.228.207.92"
 
 --//服务进程id设置
 Sconf.CentralServer_id         = Sconf.WorldID * 1000 + 1
