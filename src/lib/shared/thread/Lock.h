@@ -9,11 +9,9 @@
 
 #ifdef _WIN
 #include <windows.h>
-#else
-#ifdef __linux__
+#elif define __linux__
 #include <pthread.h>
 #include <sys/time.h>
-#endif
 #endif
 #include "Atomic.h"
 
@@ -187,31 +185,25 @@ protected:
 class Counter
 {
 public :
-	Counter()
-	{
-		m_Index = 0;
-	}
+	Counter() : _index(0)
+	{}
 	~Counter()
-	{
-	}
+	{}
 	
-	inline Counter& operator++(int)
-	{
-		g_lockedIncrement(&m_Index);
+	inline Counter& operator++(int) {
+		g_lockedIncrement(&_index);
 		return (*this);
 	}
-	inline Counter& operator--(int)
-	{
-		g_lockedDecrement(&m_Index);
+	inline Counter& operator--(int) {
+		g_lockedDecrement(&_index);
 		return(*this);
 	}
-	int Get()
-	{
-		return m_Index;
+	int get() {
+		return _index;
 	}
 
 protected:
-	long m_Index;
+	long _index;
 };
 
 #endif	//SHARED_LOCK_H
