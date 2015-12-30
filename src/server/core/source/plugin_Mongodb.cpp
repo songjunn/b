@@ -1,208 +1,249 @@
 #include "plugin_Mongodb.h"
-#include "memorypool.h"
 #include "logger.h"
 
-CMongoDB::CMongoDB() : m_working(false), m_connect(false)
+CMongoDB::CMongoDB() : _working(false), _connecting(false)
 {
 	mongoc_init();
 }
 
 CMongoDB::~CMongoDB()
 {
-	mongoc_client_destroy(m_conn);
+	mongoc_client_destroy(_conn);
     mongoc_cleanup();
 }
 
 bool CMongoDB::startup(std::string host, std::string port, std::string dbname)
 {
-	m_dbname = dbname;
-	m_port = atoi(port.c_str());
-	strncpy(m_host, host.c_str(), 32);
+	_dbname = dbname;
+	_host = "mongodb://" + host + ":" + port + "/" + dbname;
 
-	std::string errmsg = "";
-	char dbserver[64] = { 0 };
-	sprintf(dbserver, "mongodb://%s:%d", m_host, m_port);
-	if (m_conn = mongoc_client_new(dbserver)) {
-		LOGGER_ERROR("[MongonDB] Connect %s:%d db:%s Error:%s", m_host, m_port, m_dbname.c_str(), errmsg.c_str());
+	if (!_connect()) {
 		return false;
 	}
 
-	m_connect = true;
-	m_working = true;
-
-	m_threadID = ThreadLib::Create(_execOperation, this);
-
-	LOGGER_NOTICE("[MongonDB] Connect %s:%d db:%s Success", m_host, m_port, m_dbname.c_str());
+	_threadID = ThreadLib::Create(_handleEventThread, this);
 
 	return true;
 }
 
 bool CMongoDB::exit()
 {
-	m_working = false;
-	ThreadLib::WaitForFinish(m_threadID);
-
-	return true;
+    _working = false;
+	ThreadLib::WaitForFinish(_threadID);
 }
 
-void CMongoDB::execute(int opr_type, std::string opr_collection, MONGO_QUERY& opr_condition, MONGO_BSON& opr_bson)
+std::string CMongoDB::makeQuery(std::string key, int value)
 {
-	OperObj* oper = new OperObj;
-	if (!oper) {
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+
+	rapidjson::Value val;
+	val.SetInt(value);
+
+	rapidjson::Document doc;
+	doc.SetObject();
+	doc.AddMember(key.c_str(), doc.GetAllocator(), val, doc.GetAllocator());
+	doc.Accept(writer);
+
+	std::string querystr;
+	querystr.assign(buffer.GetString(), buffer.Size());
+	return querystr;
+}
+
+std::string CMongoDB::makeQuery(std::string key, int64 value)
+{
+	rapidjson::StringBuffer buffer;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+
+	rapidjson::Value val;
+	val.SetInt64(value);
+
+	rapidjson::Document doc;
+	doc.SetObject();
+	doc.AddMember(key.c_str(), doc.GetAllocator(), val, doc.GetAllocator());
+	doc.Accept(writer);
+
+	std::string querystr;
+	querystr.assign(buffer.GetString(), buffer.Size());
+	return querystr;
+}
+
+void CMongoDB::insert(std::string collection, std::string value)
+{
+	_setEvent(Mongo_Insert, collection, "", value);
+}
+
+void CMongoDB::remove(std::string collection, std::string query)
+{
+	_setEvent(Mongo_Remove, collection, query, "");
+}
+
+void CMongoDB::update(std::string collection, std::string query, std::string value)
+{
+	_setEvent(Mongo_Update, collection, query, value);
+}
+
+void CMongoDB::_setEvent(int type, std::string collection, std::string query, std::string value)
+{
+	DBEvent* event = new DBEvent;
+	if (event == NULL) {
 		return;
 	}
 
-	oper->opr_type = opr_type;
-	oper->opr_collection = opr_collection;
-	if (opr_type != Mongo_Insert) {
-		oper->opr_condition = opr_condition;
+	event->ev_type = type;
+	event->ev_collection = collection;
+	if (type != Mongo_Insert) {
+		event->ev_query = query;
 	}
-	if (opr_type != Mongo_Delete) {
-		oper->opr_bson = opr_bson;
+	if (type != Mongo_Remove) {
+		event->ev_value = value;
 	}
 
-	m_Locker.LOCK();
-	m_ObjList.AddToTail(oper);
-	m_Locker.UNLOCK();
+	_mutex.LOCK();
+	_eventList.push_back(event);
+	_mutex.UNLOCK();
 }
 
-bool CMongoDB::_reconnect()
+bool CMongoDB::_connect()
 {
-	std::string errmsg = "";
-	char dbserver[64] = { 0 };
-	sprintf(dbserver, "mongodb://%s:%d", m_host, m_port);
-	if (m_conn = mongoc_client_new(dbserver)) {
-		LOGGER_ERROR("[MongonDB] Connect %s:%d db:%s Error:%s", m_host, m_port, m_dbname.c_str(), errmsg.c_str());
+	_conn = mongoc_client_new(_host.c_str());
+	if (_conn == NULL) {
+		LOGGER_ERROR("[MongonDB] Connect %s Error", _host.c_str());
 		return false;
 	}
 
-	m_connect = true;
-
-	LOGGER_NOTICE("[MongonDB] Connect %s:%d db:%s Success", m_host, m_port, m_dbname.c_str());
+    _working = true;
+	_connecting = true;
+	
+	LOGGER_ERROR("[MongonDB] Connect %s Success", _host.c_str());
 
 	return true;
 }
 
-void CMongoDB::_insert(const std::string collection, MONGO_BSON& obj)
+void CMongoDB::_insert(const std::string collection, std::string value)
 {
-    mongoc_collection_t *_collection;
-    bson_error_t _error;
+    MONGO_COLLECTION *client;
+    MONGO_ERROR error;
+	MONGO_BSON *bson;
 
-	_collection = mongoc_client_get_collection (m_conn, m_dbname.c_str(), collection.c_str());
+	bson = bson_new_from_json((const uint8_t*)value.c_str(), value.length(), &error);
+	client = mongoc_client_get_collection (_conn, _dbname.c_str(), collection.c_str());
 
-	if (!mongoc_collection_insert (_collection, MONGOC_INSERT_NONE, &obj, NULL, &_error)) {
-		LOGGER_ERROR("[MongoDB] Insert Failed:%s:%s, %s", m_dbname.c_str(), collection.c_str(), bson_as_json(&obj, NULL));
-		LOGGER_ERROR("[MongoDB] Exception: %s", _error.message);
+	if (!mongoc_collection_insert (client, MONGOC_INSERT_NONE, bson, NULL, &error)) {
+		LOGGER_ERROR("[MongonDB] Insert Failed, %s:%s, %s", _dbname.c_str(), collection.c_str(), value.c_str());
+		LOGGER_ERROR("[MongonDB] Exception: %s ", error.message);
     }
 
-    mongoc_collection_destroy (_collection);
+	bson_destroy (bson);
+    mongoc_collection_destroy (client);
 }
 
-void CMongoDB::_delete(const std::string collection, MONGO_QUERY& query)
+void CMongoDB::_remove(const std::string collection, std::string query)
 {
-	mongoc_collection_t *_collection;
-	bson_error_t _error;
+	MONGO_COLLECTION *client;
+	MONGO_ERROR error;
+	MONGO_BSON *bson_query;
 
-	_collection = mongoc_client_get_collection (m_conn, m_dbname.c_str(), collection.c_str());
+	bson_query = bson_new_from_json((const uint8_t*)query.c_str(), query.length(), &error);
+	client = mongoc_client_get_collection (_conn, _dbname.c_str(), collection.c_str());
 
-	if (!mongoc_collection_remove (_collection, MONGOC_REMOVE_SINGLE_REMOVE, &query, NULL, &_error)) {
-        LOGGER_ERROR("[MongoDB] Delete Failed:%s:%s, %s", m_dbname.c_str(), collection.c_str(), bson_as_json(&query, NULL));
-		LOGGER_ERROR("[MongoDB] Exception: %s", _error.message);
+	if (!mongoc_collection_remove (client, MONGOC_REMOVE_SINGLE_REMOVE, bson_query, NULL, &error)) {
+		LOGGER_ERROR("[MongonDB] Delete Failed, %s:%s, %s", _dbname.c_str(), collection.c_str(), query.c_str());
+		LOGGER_ERROR("[MongonDB] Exception: %s ", error.message);
     }
 
-	mongoc_collection_destroy (_collection);
+	bson_destroy (bson_query);
+	mongoc_collection_destroy (client);
 }
 
-void CMongoDB::_update(const std::string collection, MONGO_QUERY& query, MONGO_BSON& obj)
+void CMongoDB::_update(const std::string collection, std::string query, std::string value)
 {
-	mongoc_collection_t *_collection;
-	bson_error_t _error;
+	MONGO_COLLECTION *client;
+	MONGO_ERROR error;
+	MONGO_BSON *bson_value, *bson_query;
 
-	_collection = mongoc_client_get_collection (m_conn, m_dbname.c_str(), collection.c_str());
+	bson_query = bson_new_from_json((const uint8_t*)query.c_str(), query.length(), &error);
+	bson_value = bson_new_from_json((const uint8_t*)value.c_str(), value.length(), &error);
+	client = mongoc_client_get_collection (_conn, _dbname.c_str(), collection.c_str());
 
-	if (!mongoc_collection_update (_collection, MONGOC_UPDATE_NONE, &query, &obj, NULL, &_error)) {
-        LOGGER_ERROR("[MongoDB] Update Failed:%s:%s, %s, %s", m_dbname.c_str(), collection.c_str(), bson_as_json(&query, NULL), bson_as_json(&obj, NULL));
-		LOGGER_ERROR("[MongoDB] Exception: %s", _error.message);
+	if (!mongoc_collection_update (client, MONGOC_UPDATE_NONE, bson_query, bson_value, NULL, &error)) {
+		LOGGER_ERROR("[MongonDB] Update Failed, %s:%s, %s, %s", _dbname.c_str(), collection.c_str(), query.c_str(), value.c_str());
+		LOGGER_ERROR("[MongonDB] Exception: %s ", error.message);
     }
 
-	mongoc_collection_destroy (_collection);
+	bson_destroy (bson_query);
+	bson_destroy (bson_value);
+	mongoc_collection_destroy (client);
 }
 
-void CMongoDB::select(MONGO_CURSOR* cursor, const std::string collection, MONGO_QUERY& query)
+void CMongoDB::select(std::vector<std::string> &result, const std::string collection, std::string query)
 {
-    mongoc_collection_t *_collection;
-	bson_error_t _error;
+    MONGO_COLLECTION *client;
+	MONGO_ERROR error;
+	MONGO_CURSOR *cursor;
+	MONGO_BSON *bson_query;
+	const MONGO_BSON *doc;
+	char *str;
 
-	_collection = mongoc_client_get_collection (m_conn, m_dbname.c_str(), collection.c_str());
-	cursor = mongoc_collection_find (_collection, MONGOC_QUERY_NONE, 0, 0, 0, &query, NULL, NULL);
-	
-	mongoc_collection_destroy (_collection);
-}
+	bson_query = bson_new_from_json((const uint8_t*)query.c_str(), query.length(), &error);
+	client = mongoc_client_get_collection (_conn, _dbname.c_str(), collection.c_str());
+	cursor = mongoc_collection_find (client, MONGOC_QUERY_NONE, 0, 0, 0, bson_query, NULL, NULL);
 
-CMongoDB::OperObj* CMongoDB::_getHeadOpr()
-{
-	OperObj* opr = NULL;
-
-	m_Locker.LOCK();
-	int index = m_ObjList.Head();
-	if (m_ObjList.IsValidIndex(index)) {
-		opr = m_ObjList.Element(index);
-		m_ObjList.Remove(index);
+	while (mongoc_cursor_next (cursor, &doc)) {
+		str = bson_as_json (doc, NULL);
+		result.push_back(str);
+		bson_free (str);
 	}
-	m_Locker.UNLOCK();
-
-	return opr;
+	
+	bson_destroy (bson_query);
+	mongoc_cursor_destroy (cursor);
+	mongoc_collection_destroy (client);
 }
 
-void CMongoDB::_executeOpr(OperObj* opr)
+CMongoDB::DBEvent* CMongoDB::_getHeadEvent()
 {
-	switch (opr->opr_type) {
-		case Mongo_Update: _update(opr->opr_collection, opr->opr_condition, opr->opr_bson); break;
-		case Mongo_Insert: _insert(opr->opr_collection, opr->opr_bson); break;
-		//case Mongo_Query: _select(opr->opr_collection, opr->opr_condition); break;
-		case Mongo_Delete: _delete(opr->opr_collection, opr->opr_condition); break;
+	DBEvent* ev = NULL;
+
+	_mutex.LOCK();
+	if (_eventList.size() > 0) {
+		ev = _eventList.front();
+		_eventList.pop_front();
+	}
+	_mutex.UNLOCK();
+
+	return ev;
+}
+
+void CMongoDB::_handleEvent(DBEvent* ev)
+{
+	switch (ev->ev_type) {
+		case Mongo_Update: _update(ev->ev_collection, ev->ev_query, ev->ev_value); break;
+		case Mongo_Insert: _insert(ev->ev_collection, ev->ev_value); break;
+		//case Mongo_Query: _select(ev->ev_collection, ev->ev_query); break;
+		case Mongo_Remove: _remove(ev->ev_collection, ev->ev_query); break;
 		default: break;
 	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void CMongoDB::_execOperation(void* param)
+void CMongoDB::_handleEventThread(void* args)
 {
-#if (!defined(_DEBUG)) && defined(WIN32)
-	__try
-#endif	{
-		CMongoDB* pThis = (CMongoDB*)param;
+	CMongoDB* instance = (CMongoDB*)args;
 
-		while (pThis->_isWorking())
-		{
-			pThis->m_Eventer.Wait(1);
+	while (instance->_isWorking()) {
+	    if (!instance->_conn)
+			break;
 
-			if (!pThis->m_conn)
-				return;
+		if (!instance->_isConnected()) {
+			LOGGER_ERROR("[MongonDB] Mongodb connection error");
+			instance->_connect();
+			continue;
+		}
 
-			if (!pThis->_isConnected())
-			{
-				LOGGER_ERROR("[MongonDB] DataBase connection error");
-
-				pThis->_reconnect();
-
-				continue;
-			}
-
-			OperObj* opr = NULL;
-			while (opr = pThis->_getHeadOpr())
-			{
-				pThis->_executeOpr(opr);
-
-				SAFE_DELETE(opr);
-			}
+		DBEvent* ev = NULL;
+		while (ev = instance->_getHeadEvent()) {
+			instance->_handleEvent(ev);
+			delete ev;
 		}
 	}
-#if (!defined(_DEBUG)) && defined(WIN32)
-	__except (HandleException(GetExceptionInformation(), "_ExecOperation"))
-	{
-
-	}
-#endif
-	return;
 }

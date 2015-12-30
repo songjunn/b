@@ -1,34 +1,42 @@
 #ifndef _PLUGIN_MONGODB_H_
 #define _PLUGIN_MONGODB_H_
 
-#include "plugin.h"
+#include <list>
 #include <string>
+#include <vector>
 #include "bson.h"
 #include "bcon.h"
 #include "mongoc.h"
-#include "ThreadLib.h"
+#include "convert.h"
 #include "Lock.h"
-#include "utllinkedlist.h"
+#include "ThreadLib.h"
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
+#include "plugin.h"
 
 #define MONGO_BSON bson_t
-#define MONGO_QUERY bson_t
+#define MONGO_ERROR bson_error_t
 #define MONGO_CURSOR mongoc_cursor_t
+#define MONGO_CLIENT mongoc_client_t
+#define MONGO_COLLECTION mongoc_collection_t
 
 class CMongoDB : public CPlugin
 {
-	struct OperObj {
-		int		    opr_type;
-		MONGO_QUERY	opr_condition;
-		MONGO_BSON	opr_bson;
-		std::string	opr_collection;
+public:
+	struct DBEvent {
+		int		    ev_type;
+		std::string	ev_value;
+		std::string	ev_query;
+		std::string	ev_collection;
 	};
 
 	//定义数据库操作类型 
-	enum Mongo_Opr_Type {		
+	enum Mongo_Event {		
 		Mongo_Update = 1,	//修改操作
 		Mongo_Insert,		//插入操作
 		Mongo_Query,		//查询操作
-		Mongo_Delete,		//删除操作
+		Mongo_Remove,		//删除操作
 	};
 
 public:
@@ -37,38 +45,41 @@ public:
 
 	bool startup(std::string host, std::string port, std::string dbname);
 	bool exit();
-	void execute(int opr_type, std::string opr_collection, MONGO_QUERY& opr_condition, MONGO_BSON& opr_bson);
-	void select(MONGO_CURSOR* cursor, const std::string collection, MONGO_QUERY& condition);
+
+	void insert(std::string collection, std::string value);
+	void remove(std::string collection, std::string query);
+	void update(std::string collection, std::string query, std::string value);
+	void select(std::vector<std::string> &result, const std::string collection, std::string query);
+
+	static std::string makeQuery(std::string key, int value);
+	static std::string makeQuery(std::string key, int64 value);
 
 protected:
-	void _insert(const std::string collection, MONGO_BSON& obj);
-	void _delete(const std::string collection, MONGO_QUERY& condition);
-	void _update(const std::string collection, MONGO_QUERY& condition, MONGO_BSON& obj);
+    bool _connect();
+	void _insert(const std::string collection, std::string value);
+	void _remove(const std::string collection, std::string query);
+	void _update(const std::string collection, std::string query, std::string value);
 
-	bool _reconnect();
-	void _disConnect();
-
-	void _executeOpr(OperObj* opr);
-	OperObj* _getHeadOpr();
 	int	_handleError();
+	DBEvent* _getHeadEvent();
+	void _handleEvent(DBEvent* ev);
+	void _setEvent(int type, std::string collection, std::string query, std::string value);
+	static void _handleEventThread(void* args);
 
-	inline bool	_isWorking() { return m_working; }
-	inline bool	_isConnected() { return m_connect; }
-
-	static void	_execOperation(void* param);
+	inline bool	_isWorking() { return _working; }
+	inline bool	_isConnected() { return _connecting; }
 
 protected:
-	ThreadLib::ThreadID m_threadID;
-	bool m_working;
-	bool m_connect;
-	int  m_port;
-	char m_host[32];
-	std::string m_dbname;
-	mongoc_client_t* m_conn;
+	bool _working;
+	bool _connecting;
+	std::string _host;
+	std::string _dbname;
+	MONGO_CLIENT* _conn;
 
-	Eventer m_Eventer;
-	Mutex	m_Locker;
-	CUtlLinkedList<OperObj*> m_ObjList;
+	Mutex _mutex;
+	Eventer _Eventer;
+	ThreadLib::ThreadID _threadID;
+	std::list<DBEvent*> _eventList;
 };
 
 #endif //_PLUGIN_MONGODB_H_

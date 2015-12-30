@@ -9,7 +9,7 @@
 
 #ifdef _WIN
 #include <windows.h>
-#elif define __linux__
+#elif defined __linux__
 #include <pthread.h>
 #include <sys/time.h>
 #endif

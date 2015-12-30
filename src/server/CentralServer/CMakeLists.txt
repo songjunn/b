@@ -24,5 +24,5 @@ add_executable(centralserver ${MAIN_SRC} )
 
 #LINK LIBRARIES
 target_link_libraries(centralserver core rt shared network lua dl z crypt
-  protobuf message zlog pthread bson-1.0 mongoc-1.0 mongoc-priv jansson)
+  protobuf message zlog pthread bson-1.0 mongoc-1.0 mongoc-priv)
 
