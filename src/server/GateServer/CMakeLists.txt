@@ -24,5 +24,5 @@ add_executable(gateserver ${MAIN_SRC} ${SUB_SRC})
 
 #LINK LIBRARIES
 target_link_libraries(gateserver core rt curl shared network lua dl z protobuf 
-	message zlog pthread bson-1.0 mongoc-1.0 mongoc-priv)
+	message zlog pthread bson-1.0 mongoc-1.0)
 

@@ -77,7 +77,7 @@ protected:
 	MONGO_CLIENT* _conn;
 
 	Mutex _mutex;
-	Eventer _Eventer;
+	Eventer _eventer;
 	ThreadLib::ThreadID _threadID;
 	std::list<DBEvent*> _eventList;
 };

@@ -24,5 +24,5 @@ add_executable(gameserver ${MAIN_SRC} ${SUB_SRC})
 
 #LINK LIBRARIES
 target_link_libraries(gameserver core rt shared network lua dl z
-  protobuf message zlog pthread bson-1.0 mongoc-1.0 mongoc-priv)
+  protobuf message zlog pthread bson-1.0 mongoc-1.0)
 

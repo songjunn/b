@@ -1,5 +1,4 @@
 #!/bin/bash
-
 pwdpath=$(pwd)
 
 AllSrv="

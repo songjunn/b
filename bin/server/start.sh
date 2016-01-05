@@ -15,7 +15,6 @@ export LD_LIBRARY_PATH=$pwdpath/lib
 AllSrv="${pwdpath}/centralserver
 	  	  ${pwdpath}/gameserver
 	    	${pwdpath}/gateserver
-	    	${pwdpath}/dataserver
 	  	  ${pwdpath}/loginserver"
 
 rm -f nohup.out

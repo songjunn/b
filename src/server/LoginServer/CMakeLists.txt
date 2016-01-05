@@ -24,5 +24,5 @@ add_executable(loginserver ${MAIN_SRC} ${SUB_SRC})
 
 #LINK LIBRARIES
 target_link_libraries(loginserver core rt shared network lua dl z crypt
-  protobuf message zlog pthread bson-1.0 mongoc-1.0 mongoc-priv curl
+  protobuf message zlog pthread bson-1.0 mongoc-1.0 curl
   sqlite3)

@@ -102,6 +102,7 @@ void CMongoDB::_setEvent(int type, std::string collection, std::string query, st
 	_mutex.LOCK();
 	_eventList.push_back(event);
 	_mutex.UNLOCK();
+	_eventer.Event();
 }
 
 bool CMongoDB::_connect()
@@ -231,6 +232,9 @@ void CMongoDB::_handleEventThread(void* args)
 	CMongoDB* instance = (CMongoDB*)args;
 
 	while (instance->_isWorking()) {
+
+		instance->_eventer.Wait(1000);
+
 	    if (!instance->_conn)
 			break;
 
