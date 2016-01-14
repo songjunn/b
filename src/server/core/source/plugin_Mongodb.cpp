@@ -68,6 +68,16 @@ std::string CMongoDB::makeQuery(std::string key, int64 value)
 	return querystr;
 }
 
+bool CMongoDB::hasCollection(std::string collection)
+{
+	mongoc_database_t *database = mongoc_client_get_database (_conn, _dbname.c_str());
+	bool ret = mongoc_database_has_collection(database, collection.c_str(), NULL);
+
+	mongoc_database_destroy(database);
+
+	return ret;
+}
+
 void CMongoDB::insert(std::string collection, std::string value)
 {
 	_setEvent(Mongo_Insert, collection, "", value);
@@ -81,6 +91,11 @@ void CMongoDB::remove(std::string collection, std::string query)
 void CMongoDB::update(std::string collection, std::string query, std::string value)
 {
 	_setEvent(Mongo_Update, collection, query, value);
+}
+
+void CMongoDB::upsert(std::string collection, std::string query, std::string value)
+{
+	_setEvent(Mongo_Upsert, collection, query, value);
 }
 
 void CMongoDB::_setEvent(int type, std::string collection, std::string query, std::string value)
@@ -116,7 +131,7 @@ bool CMongoDB::_connect()
     _working = true;
 	_connecting = true;
 	
-	LOGGER_ERROR("[MongonDB] Connect %s Success", _host.c_str());
+	LOGGER_INFO("[MongonDB] Connect %s Success", _host.c_str());
 
 	return true;
 }
@@ -133,7 +148,9 @@ void CMongoDB::_insert(const std::string collection, std::string value)
 	if (!mongoc_collection_insert (client, MONGOC_INSERT_NONE, bson, NULL, &error)) {
 		LOGGER_ERROR("[MongonDB] Insert Failed, %s:%s, %s", _dbname.c_str(), collection.c_str(), value.c_str());
 		LOGGER_ERROR("[MongonDB] Exception: %s ", error.message);
-    }
+	} else {
+		LOGGER_DEBUG("[MongonDB] Insert Success, %s:%s, %s", _dbname.c_str(), collection.c_str(), value.c_str());
+	}
 
 	bson_destroy (bson);
     mongoc_collection_destroy (client);
@@ -151,7 +168,9 @@ void CMongoDB::_remove(const std::string collection, std::string query)
 	if (!mongoc_collection_remove (client, MONGOC_REMOVE_SINGLE_REMOVE, bson_query, NULL, &error)) {
 		LOGGER_ERROR("[MongonDB] Delete Failed, %s:%s, %s", _dbname.c_str(), collection.c_str(), query.c_str());
 		LOGGER_ERROR("[MongonDB] Exception: %s ", error.message);
-    }
+	} else {
+		LOGGER_DEBUG("[MongonDB] Delete Success, %s:%s, %s", _dbname.c_str(), collection.c_str(), query.c_str());
+	}
 
 	bson_destroy (bson_query);
 	mongoc_collection_destroy (client);
@@ -170,10 +189,58 @@ void CMongoDB::_update(const std::string collection, std::string query, std::str
 	if (!mongoc_collection_update (client, MONGOC_UPDATE_NONE, bson_query, bson_value, NULL, &error)) {
 		LOGGER_ERROR("[MongonDB] Update Failed, %s:%s, %s, %s", _dbname.c_str(), collection.c_str(), query.c_str(), value.c_str());
 		LOGGER_ERROR("[MongonDB] Exception: %s ", error.message);
-    }
+	} else {
+		LOGGER_DEBUG("[MongonDB] Update Success, %s:%s, %s, %s", _dbname.c_str(), collection.c_str(), query.c_str(), value.c_str());
+	}
 
 	bson_destroy (bson_query);
 	bson_destroy (bson_value);
+	mongoc_collection_destroy (client);
+}
+
+void CMongoDB::_upsert(const std::string collection, std::string query, std::string value)
+{
+	MONGO_COLLECTION *client;
+	MONGO_ERROR error;
+	MONGO_BSON *bson_value, *bson_query;
+
+	bson_query = bson_new_from_json((const uint8_t*)query.c_str(), query.length(), &error);
+	bson_value = bson_new_from_json((const uint8_t*)value.c_str(), value.length(), &error);
+	client = mongoc_client_get_collection (_conn, _dbname.c_str(), collection.c_str());
+
+	if (!mongoc_collection_update (client, MONGOC_UPDATE_UPSERT, bson_query, bson_value, NULL, &error)) {
+		LOGGER_ERROR("[MongonDB] Upsert Failed, %s:%s, %s, %s", _dbname.c_str(), collection.c_str(), query.c_str(), value.c_str());
+		LOGGER_ERROR("[MongonDB] Exception: %s ", error.message);
+	} else {
+		LOGGER_DEBUG("[MongonDB] Upsert Success, %s:%s, %s, %s", _dbname.c_str(), collection.c_str(), query.c_str(), value.c_str());
+	}
+
+	bson_destroy (bson_query);
+	bson_destroy (bson_value);
+	mongoc_collection_destroy (client);
+}
+
+void CMongoDB::select(std::vector<std::string> &result, const std::string collection)
+{
+    MONGO_COLLECTION *client;
+	MONGO_ERROR error;
+	MONGO_CURSOR *cursor;
+	MONGO_BSON *bson_query;
+	const MONGO_BSON *doc;
+	char *str;
+
+	bson_query = bson_new ();
+	client = mongoc_client_get_collection (_conn, _dbname.c_str(), collection.c_str());
+	cursor = mongoc_collection_find (client, MONGOC_QUERY_NONE, 0, 0, 0, bson_query, NULL, NULL);
+
+	while (mongoc_cursor_next (cursor, &doc)) {
+		str = bson_as_json (doc, NULL);
+		result.push_back(str);
+		bson_free (str);
+	}
+	
+	bson_destroy (bson_query);
+	mongoc_cursor_destroy (cursor);
 	mongoc_collection_destroy (client);
 }
 
@@ -218,6 +285,7 @@ CMongoDB::DBEvent* CMongoDB::_getHeadEvent()
 void CMongoDB::_handleEvent(DBEvent* ev)
 {
 	switch (ev->ev_type) {
+		case Mongo_Upsert: _upsert(ev->ev_collection, ev->ev_query, ev->ev_value); break;
 		case Mongo_Update: _update(ev->ev_collection, ev->ev_query, ev->ev_value); break;
 		case Mongo_Insert: _insert(ev->ev_collection, ev->ev_value); break;
 		//case Mongo_Query: _select(ev->ev_collection, ev->ev_query); break;
@@ -250,4 +318,6 @@ void CMongoDB::_handleEventThread(void* args)
 			delete ev;
 		}
 	}
+
+	LOGGER_INFO("[MongonDB] thread terminated.");
 }

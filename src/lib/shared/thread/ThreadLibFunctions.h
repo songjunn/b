@@ -90,9 +90,9 @@ namespace ThreadLib
                 // insert the handle into the handlemap
                 g_handlemap[t] = h;
             }
-        #else           // create a linux thread
+        #else   // create a linux thread
             pthread_create( &t, NULL, DummyRun, data );
-            pthread_detach(t);
+            //pthread_detach(t); set noblock ?
         #endif
 
         if( t == 0 )

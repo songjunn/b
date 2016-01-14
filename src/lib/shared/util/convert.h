@@ -16,7 +16,7 @@ void bson2pb(const bson_t &bson, google::protobuf::Message &msg);
 void pb2bson(bson_t &bson, const google::protobuf::Message &msg);
 
 // convert struct between json and protobuf
-void json2pb(google::protobuf::Message &msg, const char *buf, size_t size);
+void json2pb(google::protobuf::Message &msg, const std::string &json);
 std::string pb2json(const google::protobuf::Message &msg);
 
 // convert struct between json and bson

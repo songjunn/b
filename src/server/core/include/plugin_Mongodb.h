@@ -35,6 +35,7 @@ public:
 	enum Mongo_Event {		
 		Mongo_Update = 1,	//修改操作
 		Mongo_Insert,		//插入操作
+		Mongo_Upsert,		//修改插入
 		Mongo_Query,		//查询操作
 		Mongo_Remove,		//删除操作
 	};
@@ -49,7 +50,10 @@ public:
 	void insert(std::string collection, std::string value);
 	void remove(std::string collection, std::string query);
 	void update(std::string collection, std::string query, std::string value);
+	void upsert(std::string collection, std::string query, std::string value);
+	void select(std::vector<std::string> &result, const std::string collection);
 	void select(std::vector<std::string> &result, const std::string collection, std::string query);
+	bool hasCollection(std::string collection);
 
 	static std::string makeQuery(std::string key, int value);
 	static std::string makeQuery(std::string key, int64 value);
@@ -59,6 +63,7 @@ protected:
 	void _insert(const std::string collection, std::string value);
 	void _remove(const std::string collection, std::string query);
 	void _update(const std::string collection, std::string query, std::string value);
+	void _upsert(const std::string collection, std::string query, std::string value);
 
 	int	_handleError();
 	DBEvent* _getHeadEvent();
