@@ -1,0 +1,5 @@
+#!/bin/sh
+kill -2 `cat replset1.pid`
+kill -2 `cat replset2.pid`
+kill -2 `cat replset3.pid`
+

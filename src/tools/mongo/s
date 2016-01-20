@@ -1,0 +1,6 @@
+#!/bin/sh
+replset1pid=$(cat replset1.pid)
+replset2pid=$(cat replset2.pid)
+replset3pid=$(cat replset3.pid)
+
+ps -ef | egrep -w "$replset1pid | $replset2pid | $replset3pid" |  grep -v grep 

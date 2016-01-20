@@ -1,0 +1,9 @@
+#!/bin/sh
+
+pwdpath=$(pwd)
+rsname="rs_tank"
+
+./bin/mongod --replSet ${rsname} --port 22001 --dbpath=./replset1/data  --logpath=./replset1/log/replset.log --pidfilepath=${pwdpath}/replset1.pid --journal --logappend --smallfiles --profile=1 --slowms=10 --httpinterface --fork --directoryperdb&
+./bin/mongod --replSet ${rsname} --port 22002 --dbpath=./replset2/data  --logpath=./replset2/log/replset.log --pidfilepath=${pwdpath}/replset2.pid --journal --logappend --smallfiles --profile=1 --slowms=10 --httpinterface --fork --directoryperdb&
+./bin/mongod --replSet ${rsname} --port 22003 --dbpath=./replset3/data  --logpath=./replset3/log/replset.log --pidfilepath=${pwdpath}/replset3.pid --journal --logappend --smallfiles --profile=1 --slowms=10 --httpinterface --fork --directoryperdb&
+

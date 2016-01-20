@@ -26,10 +26,31 @@ bool CMongoDB::startup(std::string host, std::string port, std::string dbname)
 	return true;
 }
 
+bool CMongoDB::connectReplset(std::vector<std::string> hosts, std::vector<std::string> ports, std::string rsname, std::string dbname)
+{
+	int num = hosts.size() > ports.size() ? ports.size() : hosts.size();
+	_dbname = dbname;
+	_host = "mongodb://";
+	for (int i=0; i<num-1; i++) {
+		_host += hosts[i] + ":" + ports[i] + ",";
+	}
+	_host += hosts[num-1] + ":" + ports[num-1];
+	_host += "/?replicaSet=" + rsname;
+
+	if (!_connect()) {
+		return false;
+	}
+
+	_threadID = ThreadLib::Create(_handleEventThread, this);
+
+	return true;
+}
+
 bool CMongoDB::exit()
 {
     _working = false;
 	ThreadLib::WaitForFinish(_threadID);
+	return true;
 }
 
 std::string CMongoDB::makeQuery(std::string key, int value)
@@ -223,7 +244,6 @@ void CMongoDB::_upsert(const std::string collection, std::string query, std::str
 void CMongoDB::select(std::vector<std::string> &result, const std::string collection)
 {
     MONGO_COLLECTION *client;
-	MONGO_ERROR error;
 	MONGO_CURSOR *cursor;
 	MONGO_BSON *bson_query;
 	const MONGO_BSON *doc;
@@ -313,7 +333,7 @@ void CMongoDB::_handleEventThread(void* args)
 		}
 
 		DBEvent* ev = NULL;
-		while (ev = instance->_getHeadEvent()) {
+		while ((ev = instance->_getHeadEvent()) != NULL) {
 			instance->_handleEvent(ev);
 			delete ev;
 		}

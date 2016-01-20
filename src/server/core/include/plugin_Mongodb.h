@@ -45,6 +45,7 @@ public:
 	~CMongoDB();
 
 	bool startup(std::string host, std::string port, std::string dbname);
+	bool connectReplset(std::vector<std::string> hosts, std::vector<std::string> ports, std::string rsname, std::string dbname);
 	bool exit();
 
 	void insert(std::string collection, std::string value);
