@@ -148,20 +148,8 @@ public:
 	inline int Wait(int millisecond)
 	{
 		struct timespec abstime;
-		struct timeval now;
-		gettimeofday(&now, NULL);
-		int nsec = millisecond % 1000;
-		int sec = millisecond/1000;
-
-		nsec = nsec * 1000 * 1000 + now.tv_usec *1000;
-		sec += now.tv_sec;
-
-		while (nsec > 1000*1000*1000) {
-			sec++;
-			nsec -= 1000*1000*1000;
-		}
-		abstime.tv_sec = sec;
-		abstime.tv_nsec = nsec;
+		abstime.tv_sec = time(NULL) + millisecond/1000;
+		abstime.tv_nsec = millisecond % 1000;
 
 		int result = 0;
 		pthread_mutex_lock(&mtx);

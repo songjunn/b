@@ -48,8 +48,10 @@ bool CMongoDB::connectReplset(std::vector<std::string> hosts, std::vector<std::s
 
 bool CMongoDB::exit()
 {
-    _working = false;
-	ThreadLib::WaitForFinish(_threadID);
+	if (_working) {
+		_working = false;
+		ThreadLib::WaitForFinish(_threadID);
+	}
 	return true;
 }
 
