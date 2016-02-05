@@ -87,4 +87,4 @@ public:
 
 };
 
-#endif	//SHARED_CIRCULARBUFFER_H
+#endif	//SHARED_RINGBUFFER_H

@@ -13,7 +13,7 @@ CSocker::~CSocker()
 {
 }
 
-void CSocker::Release()
+void CSocker::release()
 {
 	LOGGER_DEBUG("Release CSocker:%d", m_socket);
 
@@ -32,7 +32,7 @@ void CSocker::Release()
 	SAFE_DELETE(m_SendBuffer);
 }
 
-void CSocker::Clear()
+void CSocker::clear()
 {
 	LOGGER_DEBUG("Clear CSocker:%d", m_socket);
 
@@ -50,7 +50,7 @@ void CSocker::Clear()
 	m_SendBuffer->Clear();
 }
 
-bool CSocker::InitBuffer(int nSendSize, int nRecvSize)
+bool CSocker::createBuffer(int nSendSize, int nRecvSize)
 {
 	//初始化接收数据缓冲区
 	m_RecvSize = nRecvSize;
@@ -72,7 +72,7 @@ bool CSocker::InitBuffer(int nSendSize, int nRecvSize)
 	return true;
 }
 
-bool CSocker::CreateSocket(SOCKET sock)
+bool CSocker::createSocket(SOCKET sock)
 {
 	if( m_socket != INVALID_SOCKET )
 	{
@@ -80,19 +80,11 @@ bool CSocker::CreateSocket(SOCKET sock)
 		return false;
 	}
 
-	if( sock != INVALID_SOCKET )
+	m_socket = sock != INVALID_SOCKET ? sock : SocketOps::CreateTCPFileDescriptor();
+	if( m_socket == INVALID_SOCKET )
 	{
-		m_socket = sock;
-	}
-	else
-	{
-		//创建socket
-		m_socket = SocketOps::CreateTCPFileDescriptor();
-		if( m_socket == INVALID_SOCKET )
-		{
-			LOGGER_ERROR("创建socket失败：%d", SocketOps::GetLastError());
-			return false;
-		}
+		LOGGER_ERROR("create socket failed:%d", SocketOps::GetLastError());
+		return false;
 	}
 
 	if( !SocketOps::SetGracefulClose(m_socket) )

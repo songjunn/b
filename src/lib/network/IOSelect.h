@@ -38,15 +38,11 @@ protected:
 
 	bool		_AddSocker(CSocker * s);
 	CSocker *	_RemoveSocker(SOCKET s);
-	CSocker *	_GetSocker(SOCKET s, const char *file , int len );
+	CSocker *	_GetSocker(SOCKET s);
 
 	static void ConnThread(void * param);	//非阻塞连接方式的处理线程
 	static void RecvThread(void * param);
 	static void SendThread(void * param);
-	static void	CloseThread(void * param);
-
-public:
-	void  _dPrintSocket(const char* file = __FILE__, int  line = __LINE__);
 
 protected:
 	bool		m_RunFlag;

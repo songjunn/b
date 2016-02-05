@@ -7,9 +7,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //
-CIOSelect::CIOSelect(CNet * net)
+CIOSelect::CIOSelect(CNet * net) : m_pNet(net)
 {
-	m_pNet = net;
 }
 
 CIOSelect::~CIOSelect()
@@ -50,7 +49,7 @@ bool CIOSelect::Startup(int port, int connectmax, int sendbuffsize, int recvbuff
 	for( int i=0; i<m_ConnectMax; ++i )
 	{
 	    new(&m_Sockers[i]) CSocker;
-		//m_Sockers[i].InitBuffer(sendbuffsize, recvbuffsize);
+		m_Sockers[i].createBuffer(sendbuffsize, recvbuffsize);
 	}
 
 	m_RunFlag = true;
@@ -66,9 +65,6 @@ bool CIOSelect::Startup(int port, int connectmax, int sendbuffsize, int recvbuff
 	//创建接收线程
 	m_RecvThreadID = ThreadLib::Create(RecvThread, this);
 	LOGGER_NOTICE("[IOSelect]ThreadLib Create:RecvThread %lu", m_RecvThreadID);
-
-	//创建关闭线程	//关闭线程意义不大，改为及时释放socket资源，减少线程切换
-	//ThreadLib::Create(CloseThread, this);
 
 	LOGGER_NOTICE("[IOSelect]Net Startup listen %d", port);
 
@@ -122,8 +118,8 @@ SOCKET CIOSelect::Connect(const char * ip, int port)
 	
 	_AddSocker(s);
 
-	s->SetIP(ip);
-	s->m_status = Key_Work;
+	s->setIP(ip);
+	s->m_status = CSocker::Key_Work;
 
 	LOGGER_NOTICE("[IOSelect]Connect Socket %d, %s %d", s->m_socket, s->m_szIP, port);
 
@@ -166,7 +162,7 @@ SOCKET CIOSelect::ConnectAsync(const char * ip, int port)
 			return INVALID_SOCKET;
 		}
 
-		s->m_status = Key_Connect;
+		s->m_status = CSocker::Key_Connect;
 		m_ConnEvent.Event();
 	}
 	/*else if( ret != SOCKET_ERROR )	//客户程序与服务程序在同一主机，有可能立即返回连接成功
@@ -175,8 +171,8 @@ SOCKET CIOSelect::ConnectAsync(const char * ip, int port)
 
 	_AddSocker(s);
 
-	s->m_status = Key_Connect;
-	s->SetIP(ip);
+	s->m_status = CSocker::Key_Connect;
+	s->setIP(ip);
 
 	m_ConnEvent.Event();
 
@@ -186,7 +182,7 @@ SOCKET CIOSelect::ConnectAsync(const char * ip, int port)
 int	CIOSelect::Send(SOCKET sock, char * data, int size)
 {
 	LOGGER_DEBUG("[IOSelect]Send to %d size %d", sock, size);
-	CSocker * s = _GetSocker(sock, __FILE__, __LINE__);
+	CSocker * s = _GetSocker(sock);
 	if( !s )
 	{
 		LOGGER_ERROR("[IOSelect]send faild :no socker %d", sock);
@@ -216,7 +212,7 @@ bool CIOSelect::Recv(SOCKET sock, char * data, int size)
 
 bool CIOSelect::Shutdown(SOCKET sock)
 {
-	CSocker * s = _GetSocker(sock, __FILE__, __LINE__);
+	CSocker * s = _GetSocker(sock);
 	if( !s )
 		return false;
 	
@@ -229,7 +225,7 @@ bool CIOSelect::Shutdown(SOCKET sock)
 //
 bool CIOSelect::_CreateListenSocket(int port)
 {
-	if (!m_ListenSocker.InitBuffer(m_SockerSendBuffsize, m_SockerRecvBuffsize) || !m_ListenSocker.CreateSocket())
+	if (!m_ListenSocker.createBuffer(m_SockerSendBuffsize, m_SockerRecvBuffsize) || !m_ListenSocker.createSocket())
 	{
 		LOGGER_ERROR("[IOSelect]Init Listen Socker failed, port:%d", port);
 		//return false;
@@ -305,8 +301,8 @@ void CIOSelect::_AcceptAllConnections()
 
 			sockaddr_in * pRemote = (sockaddr_in*)&client_addr;
 			char * szIP = inet_ntoa(pRemote->sin_addr);
-			s->SetIP(szIP);
-			s->m_status = Key_Work;
+			s->setIP(szIP);
+			s->m_status = CSocker::Key_Work;
 
 			_AddSocker(s);
 
@@ -325,7 +321,7 @@ void CIOSelect::_AcceptAllConnections()
 void CIOSelect::_Shutdown(CSocker * s)
 {
 	/*s->m_Lock.LOCK();
-	s->m_status = Key_Close;
+	s->m_status = CSocker::Key_Close;
 	s->m_Lock.UNLOCK();
 
 	m_CloseEvent.Event();*/
@@ -354,18 +350,14 @@ CSocker * CIOSelect::_GetFreeSocker(SOCKET sock)
 
 	for(int i=0; i<m_ConnectMax; ++i)
 	{
-		if( m_Sockers[i].m_status == Key_Free )
+		if( m_Sockers[i].m_status == CSocker::Key_Free )
 		{
-			m_Sockers[i].InitBuffer(m_SockerSendBuffsize, m_SockerRecvBuffsize);
 			s = &m_Sockers[i];
 			break;
 		}
 	}
-
-	if( !s )
-		return NULL;
 	
-	if (!s->CreateSocket(sock))
+	if (!s || !s->createSocket(sock))
 	{
 		_FreeSocker(sock);
 		return NULL;
@@ -380,7 +372,7 @@ void CIOSelect::_FreeSocker(SOCKET sock)
 	{
 		if( m_Sockers[i].m_socket == sock )
 		{
-			m_Sockers[i].Release();
+			m_Sockers[i].release();
 			break;
 		}
 	}
@@ -388,58 +380,31 @@ void CIOSelect::_FreeSocker(SOCKET sock)
 
 bool CIOSelect::_AddSocker(CSocker * s)
 {
-	_dPrintSocket(__FILE__, __LINE__);
 	m_SocketsLock.LOCK();
 	bool ret = m_Sockets.Insert(s->m_socket, s);
 	m_SocketsLock.UNLOCK();
-	_dPrintSocket(__FILE__, __LINE__);
 	return ret;
 }
 
 CSocker * CIOSelect::_RemoveSocker(SOCKET s)
 {
-	_dPrintSocket(__FILE__, __LINE__);
 	if( INVALID_SOCKET == s )
 		return NULL;
 	m_SocketsLock.LOCK();
 	CSocker * socker = m_Sockets.Remove(s);
 	m_SocketsLock.UNLOCK();
-	_dPrintSocket(__FILE__, __LINE__);
 	return socker;
 }
 
-CSocker * CIOSelect::_GetSocker(SOCKET s, const char *file, int line)
+CSocker * CIOSelect::_GetSocker(SOCKET s)
 {
-	_dPrintSocket(file, line);
 	if( INVALID_SOCKET == s )
 		return NULL;
 	CSocker * socker = NULL;
 	m_SocketsLock.LOCK();
 	socker = m_Sockets.Find(s);
 	m_SocketsLock.UNLOCK();
-	_dPrintSocket(file, line);
 	return socker;
-}
-
-void  CIOSelect::_dPrintSocket( const char * file, int line)
-{
-#if defined(__linux__) && defined(DEBUG)
-	//m_SocketsLock.LOCK();
-
-	//Log.Debug("@@@@@@@@@@@@@@@@  <%s> $%s:%d sockets begin @@@@@@", m_NetType.c_str(), file, line);
-	//for(int index = 0, n = 0; n < this->m_Sockets.Count() ; index++ ) {
-		//CSocker *tmp = this->m_Sockets.Find(index);
-		//if (tmp == NULL) {
-			//continue;
-		//}
-		//n++;
-		
-		//Log.Debug("fd=%d status=%d ip=%s ", tmp->m_socket, tmp->m_status, tmp->m_szIP);
-	//}
-	//Log.Debug("=============== sockets end ==================== ");
-
-	//m_SocketsLock.UNLOCK();
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -462,7 +427,7 @@ void CIOSelect::SendThread(void * param)
 		
 		for( int i=0; i<pThis->m_ConnectMax; ++i )
 		{
-			if( Key_Work != pThis->m_Sockers[i].m_status )
+			if(CSocker::Key_Work != pThis->m_Sockers[i].m_status )
 				continue;
 
 			pThis->m_Sockers[i].m_SendLock.LOCK();
@@ -490,7 +455,7 @@ void CIOSelect::SendThread(void * param)
 		{
 			for( int index=0; index<pThis->m_ConnectMax; ++index )
 			{					
-				if( Key_Work != pThis->m_Sockers[index].m_status )
+				if(CSocker::Key_Work != pThis->m_Sockers[index].m_status )
 					continue;
 
 				if( !FD_ISSET(pThis->m_Sockers[index].m_socket, &fdwrite) )
@@ -560,7 +525,7 @@ void CIOSelect::RecvThread(void * param)
 
 		for( int index=0; index<pThis->m_ConnectMax; ++index )
 		{
-			if( Key_Work != pThis->m_Sockers[index].m_status )
+			if(CSocker::Key_Work != pThis->m_Sockers[index].m_status )
 				continue;	
 				
 			FD_SET(pThis->m_Sockers[index].m_socket, &fdread);
@@ -581,7 +546,7 @@ void CIOSelect::RecvThread(void * param)
 
 			for( int index=0; index<pThis->m_ConnectMax; ++index )
 			{
-				if( Key_Work != pThis->m_Sockers[index].m_status )
+				if( CSocker::Key_Work != pThis->m_Sockers[index].m_status )
 					continue;
 
 				if( FD_ISSET(pThis->m_Sockers[index].m_socket, &fdread) )
@@ -624,31 +589,6 @@ void CIOSelect::RecvThread(void * param)
 	return;
 }
 
-void CIOSelect::CloseThread(void * param)
-{
-	if( !param )
-		return;
-
-	CIOSelect *	pThis = (CIOSelect*)param;  
-
-	while (pThis->m_RunFlag)
-	{
-		pThis->m_CloseEvent.Wait();
-
-		for(int i=0; i<pThis->m_ConnectMax; ++i)
-		{
-			if( pThis->m_Sockers[i].m_status != Key_Close )
-				continue;
-
-			pThis->_CloseSocket(pThis->m_Sockers[i].m_socket);
-		}
-	}
-
-	LOGGER_NOTICE("[IOSelect]CloseThread Quit...");
-
-	return;
-}
-
 void CIOSelect::ConnThread(void * param)
 {
 	if( !param )
@@ -668,7 +608,7 @@ void CIOSelect::ConnThread(void * param)
 		SOCKET nfds = 0;
 		for(int i=0; i<pThis->m_ConnectMax; ++i)
 		{
-			if( pThis->m_Sockers[i].m_status != Key_Connect )
+			if( pThis->m_Sockers[i].m_status != CSocker::Key_Connect )
 				continue;
 
 			FD_SET(pThis->m_Sockers[i].m_socket, &fdwrite);
@@ -688,7 +628,7 @@ void CIOSelect::ConnThread(void * param)
 		{			
 			for(int i=0; i<pThis->m_ConnectMax; ++i)
 			{
-				if( pThis->m_Sockers[i].m_status != Key_Connect )
+				if( pThis->m_Sockers[i].m_status != CSocker::Key_Connect )
 					continue;
 
 				if( FD_ISSET(pThis->m_Sockers[i].m_socket, &fdwrite) )
@@ -706,7 +646,7 @@ void CIOSelect::ConnThread(void * param)
 
 					if( getpeername(pThis->m_Sockers[i].m_socket, (struct sockaddr*)&add, &addr) == 0 )
 					{
-						pThis->m_Sockers[i].m_status = Key_Work;
+						pThis->m_Sockers[i].m_status = CSocker::Key_Work;
 						LOGGER_NOTICE("[IOSelect]Socket %d async connect success!", pThis->m_Sockers[i].m_socket);
 					}
 					else
@@ -727,7 +667,7 @@ void CIOSelect::ConnThread(void * param)
 
 			for(int i=0; i<pThis->m_ConnectMax; ++i)
 			{
-				if( pThis->m_Sockers[i].m_status == Key_Connect )
+				if( pThis->m_Sockers[i].m_status == CSocker::Key_Connect )
 				{
 					pThis->m_pNet->connectReturn( pThis->m_Sockers[i].m_socket, -1 );
 					pThis->_Shutdown(&pThis->m_Sockers[i]);

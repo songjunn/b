@@ -118,8 +118,8 @@ SOCKET CIOCP::Connect(const char * ip, int port)
 		return INVALID_SOCKET;
 	}
 
-	s->SetIP(ip);
-	s->m_status = Key_Work;
+	s->setIP(ip);
+	s->m_status = CSocker::Key_Work;
 
 	if( !_SetupReadEvent(s) )
 	{
@@ -174,7 +174,7 @@ bool CIOCP::Shutdown(SOCKET sock)
 //
 bool CIOCP::_CreateListenSocket(int port)
 {
-	if (!m_ListenSocker.InitBuffer(m_SockerSendBuffsize, m_SockerRecvBuffsize) || !m_ListenSocker.CreateSocket())
+	if (!m_ListenSocker.createBuffer(m_SockerSendBuffsize, m_SockerRecvBuffsize) || !m_ListenSocker.createSocket())
 	{
 		Log.Error("[IOCP]´´½¨¼àÌýsocketÊ§°Ü");
 		return false;
@@ -372,7 +372,7 @@ CSocker * CIOCP::_GetFreeSocker()
 	CSocker * s = NEW CSocker;
 	if( s )
 	{
-		if (!s->InitBuffer(m_SockerSendBuffsize, m_SockerRecvBuffsize) || !s->CreateSocket())
+		if (!s->createBuffer(m_SockerSendBuffsize, m_SockerRecvBuffsize) || !s->createSocket())
 			goto err;
 
 		if( !_BindIoCompletionPort(s) )
@@ -401,7 +401,7 @@ CSocker * CIOCP::_GetSocker(SOCKET sock)
 
 void CIOCP::_FreeSocker(CSocker * s)
 {
-	s->Release();
+	s->release();
 
 	SAFE_DELETE(s);
 }

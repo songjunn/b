@@ -38,7 +38,7 @@ protected:
 
 	bool		_AddSocker(CSocker * s);
 	CSocker *	_RemoveSocker(SOCKET s);
-	CSocker *	_GetSocker(SOCKET s, const char *file , int len );
+	CSocker *	_GetSocker(SOCKET s);
 
 	static void ConnThread(void * param);	//非阻塞连接方式的处理线程
 	static void RecvThread(void * param);
@@ -52,8 +52,6 @@ private:
 private:
 	int _epoll_create() const ;
 	void _epoll_ctl(int epollFd, int op, int fd, uint32_t event) const;
-
-	void  _dPrintSocket(const char* file = __FILE__, int  line = __LINE__);
 
 protected:
 	CNet *		m_pNet;

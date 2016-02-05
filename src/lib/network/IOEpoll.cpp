@@ -127,7 +127,7 @@ bool CIOEpoll::Startup(int port, int connectmax, int sendbuffsize, int recvbuffs
 	for( int i=0; i<m_ConnectMax; ++i )
 	{
 	    new(&m_Sockers[i]) CSocker;
-		m_Sockers[i].InitBuffer(sendbuffsize, recvbuffsize);
+		m_Sockers[i].createBuffer(sendbuffsize, recvbuffsize);
 	}
 
 	//创建非阻塞连接线程
@@ -190,8 +190,8 @@ SOCKET CIOEpoll::Connect(const char * ip, int port)
 	
 	_AddSocker(s);
 
-	s->SetIP(ip);
-	s->m_status = Key_Work;
+	s->setIP(ip);
+	s->m_status = CSocker::Key_Work;
 
 	LNOTICE("Connect Socket %d, %s %d", s->m_socket, s->m_szIP, port);
 
@@ -234,7 +234,7 @@ SOCKET CIOEpoll::ConnectAsync(const char * ip, int port)
 			return INVALID_SOCKET;
 		}
 
-		s->m_status = Key_Connect;
+		s->m_status = CSocker::Key_Connect;
 		m_ConnEvent.Event();
 	}
 	/*else if( ret != SOCKET_ERROR )	//客户程序与服务程序在同一主机，有可能立即返回连接成功
@@ -243,8 +243,8 @@ SOCKET CIOEpoll::ConnectAsync(const char * ip, int port)
 
 	_AddSocker(s);
 
-	s->m_status = Key_Connect;
-	s->SetIP(ip);
+	s->m_status = CSocker::Key_Connect;
+	s->setIP(ip);
 
 	m_ConnEvent.Event();
 
@@ -254,7 +254,7 @@ SOCKET CIOEpoll::ConnectAsync(const char * ip, int port)
 int	CIOEpoll::Send(SOCKET sock, char * data, int size)
 {
 	LDEBUG("Send to %d size %d", sock, size);
-	CSocker * s = _GetSocker(sock, __FILE__, __LINE__);
+	CSocker * s = _GetSocker(sock);
 	if( !s )
 	{
 		LERROR("send faild :no socker %d", sock);
@@ -287,11 +287,11 @@ bool CIOEpoll::Recv(SOCKET sock, char * data, int size)
 
 bool CIOEpoll::Shutdown(SOCKET sock)
 {
-	CSocker * s = _GetSocker(sock, __FILE__, __LINE__);
+	CSocker * s = _GetSocker(sock);
 	if( !s )
 		return false;
 
-	s->m_status = Key_Work_Close;
+	s->m_status = CSocker::Key_CloseWait;
 
 	_epoll_ctl(write_fd, EPOLL_CTL_MOD, sock, EPOLLOUT );
 
@@ -302,7 +302,7 @@ bool CIOEpoll::Shutdown(SOCKET sock)
 //
 bool CIOEpoll::_CreateListenSocket(int port)
 {
-	if (!m_ListenSocker.InitBuffer(m_SockerSendBuffsize, m_SockerRecvBuffsize) || !m_ListenSocker.CreateSocket())
+	if (!m_ListenSocker.createBuffer(m_SockerSendBuffsize, m_SockerRecvBuffsize) || !m_ListenSocker.createSocket())
 	{
 		LERROR("Init Listen Socker failed, port:%d", port);
 		//return false;
@@ -330,7 +330,6 @@ bool CIOEpoll::_CreateListenSocket(int port)
 	if (ret == SOCKET_ERROR)
 	{
 		LERROR("bind port:%d failed error:%d" , port, SocketOps::GetLastError());
-		//_exit(-1);
 		return false;
 	}
 	LDEBUG("bind port:%d " , port);
@@ -381,8 +380,8 @@ void CIOEpoll::_AcceptAllConnections()
 
 			sockaddr_in * pRemote = (sockaddr_in*)&client_addr;
 			char * szIP = inet_ntoa(pRemote->sin_addr);
-			s->SetIP(szIP);
-			s->m_status = Key_Work;
+			s->setIP(szIP);
+			s->m_status = CSocker::Key_Work;
 
 			bool ret = _AddSocker(s); if (!ret) LERROR("_AddSocker(%d:%d) failed", s->m_socket, sockfd);
 
@@ -442,7 +441,7 @@ CSocker * CIOEpoll::_GetFreeSocker(SOCKET sock)
 
 	for(int i=0; i<m_ConnectMax; ++i)
 	{
-		if( m_Sockers[i].m_status == Key_Free )
+		if( m_Sockers[i].m_status == CSocker::Key_Free )
 		{
 			s = &m_Sockers[i];
 			break;
@@ -452,7 +451,7 @@ CSocker * CIOEpoll::_GetFreeSocker(SOCKET sock)
 	if( !s )
 		return NULL;
 	
-	if (!s->CreateSocket(sock))
+	if (!s->createSocket(sock))
 	{
 		LERROR("_GetFreeSocker failed, socket:%d", s->m_socket);
 		_FreeSocker(sock);
@@ -468,7 +467,7 @@ void CIOEpoll::_FreeSocker(SOCKET sock)
 	{
 		if( m_Sockers[i].m_socket == sock )
 		{
-			m_Sockers[i].Clear();
+			m_Sockers[i].clear();
 			break;
 		}
 	}
@@ -476,56 +475,31 @@ void CIOEpoll::_FreeSocker(SOCKET sock)
 
 bool CIOEpoll::_AddSocker(CSocker * s)
 {
-	_dPrintSocket(__FILE__, __LINE__);
 	m_SocketsLock.LOCK();
 	bool ret = m_Sockets.Insert(s->m_socket, s);
 	m_SocketsLock.UNLOCK();
-	_dPrintSocket(__FILE__, __LINE__);
 	return ret;
 }
 
 CSocker * CIOEpoll::_RemoveSocker(SOCKET s)
 {
-	_dPrintSocket(__FILE__, __LINE__);
 	if( INVALID_SOCKET == s )
 		return NULL;
 	m_SocketsLock.LOCK();
 	CSocker * socker = m_Sockets.Remove(s);
 	m_SocketsLock.UNLOCK();
-	_dPrintSocket(__FILE__, __LINE__);
 	return socker;
 }
 
-CSocker * CIOEpoll::_GetSocker(SOCKET s, const char *file, int line)
+CSocker * CIOEpoll::_GetSocker(SOCKET s)
 {
-	_dPrintSocket(file, line);
 	if( INVALID_SOCKET == s )
 		return NULL;
 	CSocker * socker = NULL;
 	m_SocketsLock.LOCK();
 	socker = m_Sockets.Find(s);
 	m_SocketsLock.UNLOCK();
-	_dPrintSocket(file, line);
 	return socker;
-}
-
-void  CIOEpoll::_dPrintSocket( const char * file, int line)
-{
-	//m_SocketsLock.LOCK();
-
-	//LDEBUG("@@@@@@@@@@@@@@@@  $%s:%d sockets begin @@@@@@",  file, line);
-	//for(int index = 0, n = 0; n < this->m_Sockets.Count() ; index++ ) {
-		//CSocker *tmp = this->m_Sockets.Find(index);
-		//if (tmp == NULL) {
-			//continue;
-		//}
-		//n++;
-		
-		//LDEBUG("fd=%d status=%d ip=%s ", tmp->m_socket, tmp->m_status, tmp->m_szIP);
-	//}
-	//LDEBUG("=============== sockets end ==================== ");
-
-	//m_SocketsLock.UNLOCK();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -561,7 +535,7 @@ void CIOEpoll::SendThread(void * param)
 		for (i = 0; i < nevents; i++) {
 
 			LDEBUG("SendThread : event=%d fd=%d", events[i].events, events[i].data.fd);
-			CSocker *pSocker = pThis->_GetSocker(events[i].data.fd, __FILE__, __LINE__);
+			CSocker *pSocker = pThis->_GetSocker(events[i].data.fd);
 			if (pSocker == NULL) {
 				LERROR("SendThread error: _GetSocker(%d) failed", events[i].data.fd);
 				pThis->_epoll_ctl(pThis->write_fd, EPOLL_CTL_DEL, events[i].data.fd, 0);
@@ -573,7 +547,7 @@ void CIOEpoll::SendThread(void * param)
 				continue;
 			}*/
 
-			if ( Key_Work != pSocker->m_status && Key_Work_Close != pSocker->m_status) {
+			if (CSocker::Key_Work != pSocker->m_status && CSocker::Key_CloseWait != pSocker->m_status) {
 				LERROR("SendThread error: fd=%d status=%d", events[i].data.fd, pSocker->m_status);
 				pThis->_Shutdown(pSocker->m_socket);
 				continue;
@@ -625,20 +599,19 @@ void CIOEpoll::RecvThread(void * param)
 			if (pThis->m_ListenSocker.m_socket == events[i].data.fd ) {
 				if( pThis->m_ListenSocker.m_socket != INVALID_SOCKET ) {
 					pThis->_AcceptAllConnections();
-					pThis->_dPrintSocket(__FILE__, __LINE__);
 				}
 				continue;
 			}
 
-			CSocker *pSocker = pThis->_GetSocker(events[i].data.fd, __FILE__, __LINE__);
-			if (pSocker == NULL || Key_Work_Close == pSocker->m_status) {
+			CSocker *pSocker = pThis->_GetSocker(events[i].data.fd);
+			if (pSocker == NULL || CSocker::Key_CloseWait == pSocker->m_status) {
 				LERROR("RecvThread : _GetSocker(%d) failed events[i].events=%d", 
 						events[i].data.fd, events[i].events);
 				pThis->_epoll_ctl(pThis->read_fd, EPOLL_CTL_DEL, events[i].data.fd, 0);
 				continue;
 			}
 
-			if ( Key_Work != pSocker->m_status ) {
+			if (CSocker::Key_Work != pSocker->m_status ) {
 				LERROR("RecvThread error: fd=%d status=%d", events[i].data.fd, (int)pSocker->m_status);
 				pThis->_Shutdown(pSocker->m_socket);
 				continue;
@@ -682,7 +655,7 @@ void CIOEpoll::ConnThread(void * param)
 		work_flag = false;
 
 		for (i = 0; i < pThis->m_ConnectMax; i++) {
-			if (Key_Connect != pThis->m_Sockers[i].m_status) {
+			if (CSocker::Key_Connect != pThis->m_Sockers[i].m_status) {
 				continue;
 			}
 			work_flag = true;
@@ -703,13 +676,13 @@ void CIOEpoll::ConnThread(void * param)
 		/* Handle the events*/
 		for (i = 0; i < nevents; i++) {
 
-			CSocker *pSocker = pThis->_GetSocker(events[i].data.fd, __FILE__, __LINE__);
+			CSocker *pSocker = pThis->_GetSocker(events[i].data.fd);
 			if (pSocker == NULL) {
 				LERROR("ConnThread error: _GetSocker(%d) faile", events[i].data.fd);
 				continue;
 			}
 
-			if ( Key_Connect != pSocker->m_status) {
+			if (CSocker::Key_Connect != pSocker->m_status) {
 				LERROR("ConnThread error: fd=%d status=%d", events[i].data.fd, pSocker->m_status);
 				continue;
 			}
@@ -729,7 +702,7 @@ void CIOEpoll::ConnThread(void * param)
 
 				if( getpeername(pSocker->m_socket, (struct sockaddr*)&add, &addr) == 0 )
 				{
-					pSocker->m_status = Key_Work;
+					pSocker->m_status = CSocker::Key_Work;
 					LNOTICE("Socket %d async connect success", pSocker->m_socket);
 				}
 				else
@@ -801,7 +774,7 @@ int CIOEpoll::_send(CSocker* pSocker, int epoll_fd)
 		int lsize = pSocker->m_SendBuffer->Remove(size);
 		pSocker->m_SendLock.UNLOCK();
 		if (lsize <= 0) {
-			if (pSocker->m_status == Key_Work_Close) {
+			if (pSocker->m_status == CSocker::Key_CloseWait) {
 				LDEBUG("_send: sock=%d lsize=%d status=%d", pSocker->m_socket, lsize, pSocker->m_status);
 				this->_Shutdown(pSocker->m_socket);
 			} else {
@@ -809,7 +782,7 @@ int CIOEpoll::_send(CSocker* pSocker, int epoll_fd)
 			}
 		}
 	} 
-	else if (size == 0 && pSocker->m_status == Key_Work_Close) {
+	else if (size == 0 && pSocker->m_status == CSocker::Key_CloseWait) {
 		this->_Shutdown(pSocker->m_socket);
 	}
 	else if (size == SOCKET_ERROR) {

@@ -6,29 +6,28 @@
 #include "RingBuffer.h"
 #include "Lock.h"
 
-
-enum Key_Status
-{
-	Key_Free = 0,
-	Key_Listen,
-	Key_Connect,
-	Key_Work,
-	Key_Close,
-	Key_Work_Close
-};
-
 class CSocker
 {
 public:
+	enum Key_Status {
+		Key_Free = 0,
+		Key_Listen,
+		Key_Connect,
+		Key_Work,
+		Key_Close,
+		Key_CloseWait
+	};
+
+public:
 	CSocker();
-	~CSocker();
+	virtual ~CSocker();
 
-	bool	InitBuffer(int nSendSize, int nRecvSize);	//初始化
-	bool	CreateSocket(SOCKET sock = INVALID_SOCKET);	//创建socket
-	void	Release();
-	void	Clear();
+	bool createBuffer(int nSendSize, int nRecvSize);	//初始化
+	bool createSocket(SOCKET sock = INVALID_SOCKET);	//创建socket
+	void release();
+	void clear();
 
-	void	SetIP(const char * ip)	{ strncpy(m_szIP, ip, 32); }
+	void setIP(const char *ip) {strncpy(m_szIP, ip, 32);}
 
 public:
 	SOCKET			m_socket;		//socket句柄
