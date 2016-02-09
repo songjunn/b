@@ -81,7 +81,7 @@ public:
 	* @param len 通过引用返回写指针到末尾的长度
 	* @return 写指针
 	*/
-	char * GetWritePtr(LONG & len);
+	char * GetWritePtr(ULONG & len);
 
 	/** 返回缓冲区剩余大小
 	*/
