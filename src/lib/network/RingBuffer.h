@@ -4,8 +4,8 @@
  *				songjun 2012.12.25
  */
 
-#ifndef SHARED_RINGBUFFER_H
-#define SHARED_RINGBUFFER_H
+#ifndef _RINGBUFFER_H_
+#define _RINGBUFFER_H_
 
 #include "types.h"
 
@@ -23,8 +23,8 @@ protected:
 	//未读取数据长度
 	size_t m_ReadSize;
 
-	inline size_t GetSizeAfterWptr()	{ return (m_WritePtr < m_ReadPtr) ? (m_ReadPtr - m_WritePtr) : (m_bufferEnd - m_WritePtr); }
-	inline size_t GetSizeAfterRptr()	{ return (m_ReadPtr < m_WritePtr) ? (m_WritePtr - m_ReadPtr) : (m_bufferEnd - m_ReadPtr); }
+	inline size_t GetSizeAfterWptr() { return (m_WritePtr < m_ReadPtr) ? (m_ReadPtr - m_WritePtr) : (m_bufferEnd - m_WritePtr); }
+	inline size_t GetSizeAfterRptr() { return (m_ReadPtr < m_WritePtr) ? (m_WritePtr - m_ReadPtr) : (m_bufferEnd - m_ReadPtr); }
 
 public:
 	/** 构造函数
@@ -75,16 +75,22 @@ public:
 	* @param len 通过引用返回读指针到末尾的长度
 	* @return 读指针
 	*/
-	char * GetReadPtr(ULONG & len);
+	char * GetReadPtr(size_t & len);
+
+	/** 获取写指针和其到末尾的长度
+	* @param len 通过引用返回写指针到末尾的长度
+	* @return 写指针
+	*/
+	char * GetWritePtr(size_t & len);
 
 	/** 返回缓冲区剩余大小
 	*/
-	inline size_t GetFreeSize()			{ return m_bufferEnd - m_buffer - m_ReadSize; }
+	inline size_t GetFreeSize()	{ return m_bufferEnd - m_buffer - m_ReadSize; }
 
 	/** 返回缓冲区已占用大小
 	*/
-	inline size_t GetReadSize()			{ return m_ReadSize; }
+	inline size_t GetReadSize()	{ return m_ReadSize; }
 
 };
 
-#endif	//SHARED_RINGBUFFER_H
+#endif	//_RINGBUFFER_H_

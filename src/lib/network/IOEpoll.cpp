@@ -803,13 +803,17 @@ int CIOEpoll::_send(CSocker* pSocker, int epoll_fd)
 
 int CIOEpoll::_recv(CSocker* pSocker, int epoll_fd)
 {
-	int size = recv(pSocker->m_socket, pSocker->m_RecvBuffer, pSocker->m_RecvSize, 0);
+	int len;
+	char * buf = pSocker->m_RecvBuffer->GetWritePtr(len);
+	int size = recv(pSocker->m_socket, buf, len, 0);
 
 	if( size > 0 )
 	{
 		m_pNet->updateRecvSize(size);
 		LDEBUG("RecvThread debug: socket=%d recv size=%d", pSocker->m_socket, size); 
-		if( !this->Recv(pSocker->m_socket, pSocker->m_RecvBuffer, size) )
+		int len;
+		char * buf = pSocker->m_RecvBuffer->GetReadPtr(len);
+		if( !this->Recv(pSocker->m_socket, buf, len) )
 		{
 			//this->_epoll_ctl(epoll_fd, EPOLL_CTL_DEL, pSocker->m_socket, 0);
 			this->_Shutdown(pSocker->m_socket);
