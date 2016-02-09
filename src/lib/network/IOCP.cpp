@@ -440,12 +440,11 @@ bool CIOCP::_SetupAcceptEvent(CSocker * s)
 		return false;
 
 	DWORD wRecvbyte = 0;
-	int bufsize;
-	char * buf = s->m_RecvBuffer->GetWritePtr(bufsize);
 	const size_t sizeOfAddress = sizeof(SOCKADDR_IN) + 16;
-	bufsize = 0;	//设置为零，可以使accept立即返回，不再等待数据
+	//int bufsize = s->m_RecvSize - 2 * sizeOfAddress;
+ 	int bufsize = 0;	//设置为零，可以使accept立即返回，不再等待数据
 
-	BOOL ret = m_pAcceptEx(m_ListenSocker.m_socket,s->m_socket,buf,bufsize,sizeOfAddress,sizeOfAddress,&wRecvbyte,&pMsg->m_ol);
+	BOOL ret = m_pAcceptEx(m_ListenSocker.m_socket,s->m_socket,s->m_RecvBuffer,bufsize,sizeOfAddress,sizeOfAddress,&wRecvbyte,&pMsg->m_ol);
 	if( !ret )
 	{
 		int error = SocketOps::GetLastError();
@@ -470,7 +469,8 @@ bool CIOCP::_SetupReadEvent(CSocker * s)
 	ULONG wSize = 0;
 	ULONG lpFlags = MSG_PARTIAL;
 	WSABUF buf;
-	buf.buf = s->m_RecvBuffer->GetWritePtr(buf.len);
+	buf.len = s->m_RecvSize;
+ 	buf.buf = s->m_RecvBuffer;
 
 	int ret = WSARecv(s->m_socket,&buf,1,&wSize,&lpFlags,&pIOMsg->m_ol,NULL);
 	if( ret == SOCKET_ERROR )
@@ -538,13 +538,10 @@ bool CIOCP::_HandleAcceptComplete(SOCKET sock, int len)
 	int sizeOfLocalAddress, sizeOfRemoteAddress;
 	sockaddr *pLocalAddress, *pRemoteAddress;
 
-	int bufsize;
-	char * writebuf = s->m_RecvBuffer->GetWritePtr(bufsize);
-
 	const size_t sizeOfAddress = sizeof(SOCKADDR_IN) + 16;
-	bufsize = bufsize - 2 * sizeOfAddress;
+	int bufsize = s->m_RecvSize - 2 * sizeOfAddress;
 
-	m_pGetAcceptExSockaddrs(writebuf,bufsize,sizeOfAddress,sizeOfAddress,&pLocalAddress,&sizeOfLocalAddress,&pRemoteAddress,&sizeOfRemoteAddress);
+	m_pGetAcceptExSockaddrs(s->m_RecvBuffer,bufsize,sizeOfAddress,sizeOfAddress,&pLocalAddress,&sizeOfLocalAddress,&pRemoteAddress,&sizeOfRemoteAddress);
 
 	sprintf(s->m_szIP, "%s", inet_ntoa(((sockaddr_in*)pRemoteAddress)->sin_addr));
 
@@ -568,9 +565,7 @@ bool CIOCP::_HandleAcceptComplete(SOCKET sock, int len)
 		return false;
 	}
 
-	int size;
-	char * readbuf = s->m_RecvBuffer->GetReadPtr(size);
-	if( len > 0 && !Recv(s->m_socket, readbuf, size) )
+	if( len > 0 && !Recv(s->m_socket, s->m_RecvBuffer, len) )
 	{
 		_FreeSocker(s);
 		return false;
@@ -585,9 +580,7 @@ bool CIOCP::_HandleReadComplete(CSocker * s, int len)
 	{
 		Log.Debug("[IOCP]Read:socket=%d recv size=%d", s->m_socket, len);
 
-		int size;
-		char * buf = s->m_RecvBuffer->GetReadPtr(size);
-		Recv(s->m_socket, buf, size); 
+		Recv(s->m_socket, s->m_RecvBuffer, len); 
 
 		return _SetupReadEvent(s);
 	}

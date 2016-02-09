@@ -551,18 +551,13 @@ void CIOSelect::RecvThread(void * param)
 
 				if( FD_ISSET(pThis->m_Sockers[index].m_socket, &fdread) )
 				{
-					int len;
-					char * buf = pThis->m_Sockers[index].m_RecvBuffer->GetWritePtr(len);
-					int size = recv(pThis->m_Sockers[index].m_socket, buf, len, 0);
+					int size = recv(pThis->m_Sockers[index].m_socket, pThis->m_Sockers[index].m_RecvBuffer, pThis->m_Sockers[index].m_RecvSize, 0);
 
 					if( size > 0 )
 					{
 						LOGGER_DEBUG("[IOSelect]RecvThread debug: socket=%d recv size=%d", pThis->m_Sockers[index].m_socket, size); 
 						pThis->m_pNet->updateRecvSize(size);
-
-						int len;
-						char * buf = pThis->m_Sockers[index].m_RecvBuffer->GetReadPtr(len);
-						pThis->Recv(pThis->m_Sockers[index].m_socket, buf, len);
+						pThis->Recv(pThis->m_Sockers[index].m_socket, pThis->m_Sockers[index].m_RecvBuffer, size);
 					}
 					else if( size == 0 )	//远程主机socket正常关闭
 					{

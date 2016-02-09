@@ -25,6 +25,7 @@ void CSocker::release()
 	m_socket = INVALID_SOCKET;
 	m_timeout = 0;
 	m_szIP[0] = '\0';
+	m_RecvSize = 0;
 	m_status = Key_Free;
 
 	SAFE_DELETE(m_RecvBuffer);
@@ -45,15 +46,16 @@ void CSocker::clear()
 	m_szIP[0] = '\0';
 	m_status = Key_Free;
 
-	m_RecvBuffer->Clear();
+	memset(m_RecvBuffer, 0, m_RecvSize);
 	m_SendBuffer->Clear();
 }
 
 bool CSocker::createBuffer(int nSendSize, int nRecvSize)
 {
 	//初始化接收数据缓冲区
-	m_RecvBuffer = NEW RingBuffer;
-	if (!m_RecvBuffer || !m_RecvBuffer->Allocate(nRecvSize))
+	m_RecvSize = nRecvSize;
+ 	m_RecvBuffer = NEW char[nRecvSize];
+ 	if( !m_RecvBuffer )
 	{
 		LOGGER_ERROR("new recv buffer failed，size=%d", nRecvSize);
 		return false;

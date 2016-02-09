@@ -75,13 +75,7 @@ public:
 	* @param len 通过引用返回读指针到末尾的长度
 	* @return 读指针
 	*/
-	char * GetReadPtr(size_t & len);
-
-	/** 获取写指针和其到末尾的长度
-	* @param len 通过引用返回写指针到末尾的长度
-	* @return 写指针
-	*/
-	char * GetWritePtr(size_t & len);
+	char * GetReadPtr(ULONG & len);
 
 	/** 返回缓冲区剩余大小
 	*/

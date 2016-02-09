@@ -32,7 +32,8 @@ public:
 public:
 	SOCKET			m_socket;		//socket句柄
 	Key_Status		m_status;		//工作状态
-	RingBuffer*		m_RecvBuffer;	//接收数据缓冲
+	int				m_RecvSize;		//接收数据缓冲区大小
+ 	char*			m_RecvBuffer;	//接收数据缓冲
 	RingBuffer*		m_SendBuffer;	//发送数据缓冲
 	Mutex			m_SendLock;
 	char			m_szIP[32];		//连接端的ip
