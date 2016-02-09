@@ -4,8 +4,8 @@
  *				songjun 2012.12.25
  */
 
-#ifndef SHARED_RINGBUFFER_H
-#define SHARED_RINGBUFFER_H
+#ifndef _RINGBUFFER_H_
+#define _RINGBUFFER_H_
 
 #include "types.h"
 
@@ -77,6 +77,12 @@ public:
 	*/
 	char * GetReadPtr(ULONG & len);
 
+	/** 获取写指针和其到末尾的长度
+	* @param len 通过引用返回写指针到末尾的长度
+	* @return 写指针
+	*/
+	char * GetWritePtr(LONG & len);
+
 	/** 返回缓冲区剩余大小
 	*/
 	inline size_t GetFreeSize()			{ return m_bufferEnd - m_buffer - m_ReadSize; }
@@ -87,4 +93,4 @@ public:
 
 };
 
-#endif	//SHARED_RINGBUFFER_H
+#endif	//_RINGBUFFER_H_

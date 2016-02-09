@@ -147,3 +147,14 @@ char * RingBuffer::GetReadPtr(ULONG & len)
 
 	return m_ReadPtr;
 }
+
+char * RingBuffer::GetWritePtr(ULONG & len)
+{
+	if( GetFreeSize() <= 0 )
+		len = 0;
+	else
+		len = GetSizeAfterWptr();
+
+	return m_WritePtr;
+}
+
