@@ -138,7 +138,7 @@ bool RingBuffer::Write(const char * data, size_t bytes)
 //	return Write((char *)buff, size);
 //}
 
-char * RingBuffer::GetReadPtr(ULONG & len)
+char * RingBuffer::GetReadPtr(size_t & len)
 {
 	if( GetReadSize() <= 0 )
 		len = 0;
@@ -148,7 +148,7 @@ char * RingBuffer::GetReadPtr(ULONG & len)
 	return m_ReadPtr;
 }
 
-char * RingBuffer::GetWritePtr(ULONG & len)
+char * RingBuffer::GetWritePtr(size_t & len)
 {
 	if( GetFreeSize() <= 0 )
 		len = 0;
