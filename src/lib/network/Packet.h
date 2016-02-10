@@ -96,22 +96,21 @@ public:
 #endif
 
 private:
-	inline void	_SetSize(uint16 wSize) {*(uint16*)(data + HEAD_SIZE) = wSize;}
-	inline void	_SetType(uint16 wType) {*(uint16*)(data + HEAD_TYPE) = wType;}
+	inline void	_setSize(uint16 wSize) {*(uint16*)(data + HEAD_SIZE) = wSize;}
+	inline void	_setType(uint16 wType) {*(uint16*)(data + HEAD_TYPE) = wType;}
 
-	inline uint16 _HeadSize() {return DATA_PARAM;}
-	inline char * _DataBuffer()	{return data + DATA_PARAM;}
-	inline uint16 _DataSize() {return Size() - _HeadSize();}
+	inline char * _dataBuffer()	{return data + DATA_PARAM;}
+	inline uint16 _dataSize() {return Size() - DATA_PARAM;}
 
-	inline uint32_t	_CRC() {return *(uint32_t*)(data + HEAD_CRC);}
-	inline void	_SetCRC(uint32_t CRC) {*(uint32_t*)(data + HEAD_CRC) = CRC;}
+	inline uint32_t	_crc() {return *(uint32_t*)(data + HEAD_CRC);}
+	inline void	_setCRC(uint32_t CRC) {*(uint32_t*)(data + HEAD_CRC) = CRC;}
 
 	inline int _getLeftSize() {return Size() - _cpos;}
 	inline int _getHeadLeftSize() {return DATA_PARAM - _cpos;}
 
-	void setHeader(uint16 wType);
-	void recvData(char * buf, uint16 size);
-	bool crcCheck();
+	void _setHeader(uint16 wType);
+	void _recvData(char * buf, uint16 size);
+	bool _crcCheck();
 
 #if USE_SHARED_PARSER
 	template <typename T> void append(T value);

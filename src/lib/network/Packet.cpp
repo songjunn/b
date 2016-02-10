@@ -25,12 +25,12 @@ int Packet::assemble(char * data, int size)
 			wsize = _getLeftSize() < lsize ? _getLeftSize() : lsize;
 		}
 
-		recvData(data + rsize, wsize);
+		_recvData(data + rsize, wsize);
 		rsize += wsize; 
 		
 		if (_getLeftSize() == 0)		//已摘出一个完整包
 		{
-			if (!crcCheck())		//完整性校验
+			if (!_crcCheck())		//完整性校验
 			{
 				LOGGER_ERROR("crcCheck failed sock=%d size=%d lsize=%d rsize=%d", sock, size, lsize, rsize);
 				return 0;
@@ -48,7 +48,7 @@ int Packet::assemble(char * data, int size)
 	return rsize;
 }
 
-void Packet::recvData(char * buf, uint16 size)
+void Packet::_recvData(char * buf, uint16 size)
 {
 	if( size <= 0 || _cpos + size > PACKET_BUFFER_SIZE )
 	{
@@ -59,22 +59,22 @@ void Packet::recvData(char * buf, uint16 size)
 	_cpos += size;
 }
 
-bool Packet::crcCheck()
+bool Packet::_crcCheck()
 {
-	uint32_t crc = make_crc32(_DataBuffer(), _DataSize());
+	uint32_t crc = make_crc32(_dataBuffer(), _dataSize());
 
-	if (_CRC() == crc ) return true;
-	else LOGGER_ERROR("[Packet] _CRC():%d != crc:%d ", _CRC(), crc);
+	if (_crc() == crc ) return true;
+	else LOGGER_ERROR("[Packet] _crc():%d != crc:%d ", _crc(), crc);
 	return false;
 }
 
-void Packet::setHeader(uint16 wType)
+void Packet::_setHeader(uint16 wType)
 {
-	_SetType(wType);
-	_SetSize(_wpos);
+	_setType(wType);
+	_setSize(_wpos);
 
-	uint32_t crc = make_crc32(_DataBuffer(), _DataSize());
-	_SetCRC(crc);
+	uint32_t crc = make_crc32(_dataBuffer(), _dataSize());
+	_setCRC(crc);
 }
 
 #if USE_SHARED_PARSER
@@ -209,7 +209,7 @@ void Packet::setBuffer(uint16 wType, const char* buf, uint16 size)
 	{
 		memcpy(&data[DATA_PARAM], buf, size);
 		_wpos += size;
-		setHeader(wType);
+		_setHeader(wType);
 	}
 	else
 	{
@@ -221,8 +221,8 @@ void Packet::getBuffer(std::string& buf)
 {
 	if( Size() >= _rpos )
 	{
-		buf.assign((char*)&data[_rpos], _DataSize());
-		//_rpos += _DataSize();
+		buf.assign((char*)&data[_rpos], _dataSize());
+		//_rpos += _dataSize();
 	}
 	else
 	{
