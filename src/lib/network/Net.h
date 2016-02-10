@@ -36,24 +36,24 @@ public:
 	virtual bool	connectReturn(SOCKET sock, int error=0);
 
 	virtual bool	handlePacket(Packet * pCmd)		{return true;}
-	virtual void	printLog();
-	void _startMonitor(const char * path, int port);
 
 private:
-	Packet * getPacketBuff(SOCKET sock);
-	Packet * removePacketBuff(SOCKET sock);
-	bool insertPacketBuff(SOCKET sock, Packet * pCmd);
+	Packet * _getDataBuff(SOCKET sock);
+	Packet * _removeDataBuff(SOCKET sock);
+	bool _addDataBuff(SOCKET sock, Packet * pCmd);
+
+	void _startMonitor(const char * path, int port);
 
 	virtual void _closeReturn(SOCKET sock) {}
 	virtual void _acceptReturn(SOCKET sock) {}
 	virtual void _connectReturn(SOCKET sock, int error = 0) {}
 
 private:
-	Mutex								m_PacketLock;
-	CStlMap<SOCKET, Packet*>	m_PacketList;	//没有解析完整的数据包
+	Mutex m_PacketLock;
+	CStlMap<SOCKET, Packet*> m_PacketList;	//没有解析完整的数据包
 
 public:
-	CSocketNet *	m_Net;
+	CSocketNet * m_Net;
 
 };
 

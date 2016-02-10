@@ -82,7 +82,7 @@ bool CNet::recv(SOCKET sock, char * data, int size)
 	bool bOldPacket = false;
 	bool bFinish = false;
 
-	Packet * pCmd = getPacketBuff(sock);
+	Packet * pCmd = _getDataBuff(sock);
 	if( pCmd )
 		bOldPacket = true;
 
@@ -123,7 +123,7 @@ bool CNet::recv(SOCKET sock, char * data, int size)
 			if( !pCmd->crcCheck() )
 			{
 				LOGGER_ERROR("[CNet] crcCheck() sock=%d size=%d lsize=%d nReadPtr=%d failed", sock, size, lsize, nReadPtr);
-				removePacketBuff(sock);
+				_removeDataBuff(sock);
 				SAFE_DELETE(pCmd);
 				return false;
 			}
@@ -139,7 +139,7 @@ bool CNet::recv(SOCKET sock, char * data, int size)
 				//清空缓存
 				if( bOldPacket )
 				{
-					removePacketBuff(sock);
+					_removeDataBuff(sock);
 					bOldPacket = false;
 				}
 
@@ -150,7 +150,7 @@ bool CNet::recv(SOCKET sock, char * data, int size)
 		else if (pCmd->GetLeftSize() < 0) 
 		{
 			LOGGER_ERROR("[CNet] (pCmd->GetLeftSize() < 0 sock=%d", sock);
-			removePacketBuff(sock);
+			_removeDataBuff(sock);
 			SAFE_DELETE(pCmd);
 			return false;
 	   }
@@ -159,7 +159,7 @@ bool CNet::recv(SOCKET sock, char * data, int size)
 	//当前数据包没有构建完整，缓存下来，等待下次网络数据
 	if( !bFinish )
 	{
-		insertPacketBuff( sock, pCmd );
+		_addDataBuff( sock, pCmd );
 	}
 	
 	return true;
@@ -167,7 +167,7 @@ bool CNet::recv(SOCKET sock, char * data, int size)
 
 void CNet::close(SOCKET sock)
 {
-	Packet * pCmd = removePacketBuff(sock);
+	Packet * pCmd = _removeDataBuff(sock);
 	SAFE_DELETE(pCmd);
 	_closeReturn(sock);
 }
@@ -178,13 +178,6 @@ bool CNet::shutdown(SOCKET sock)
 		return false;
 
 	return m_Net->Shutdown(sock);
-}
-
-void CNet::printLog()
-{
-	/*int del = timeGetTime() - time;
-	if( del )
-		Log.Notice("data:%d, time:%d, avg:%d bytes per second", size, del, size/del);*/
 }
 
 bool CNet::accept(SOCKET sock, const char * ip)
@@ -210,7 +203,7 @@ bool CNet::connectReturn(SOCKET sock, int error)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //
-Packet * CNet::getPacketBuff(SOCKET sock)
+Packet * CNet::_getDataBuff(SOCKET sock)
 {
 	Packet * pCmd = NULL;
 	m_PacketLock.LOCK();
@@ -219,7 +212,7 @@ Packet * CNet::getPacketBuff(SOCKET sock)
 	return pCmd;
 }
 
-bool CNet::insertPacketBuff(SOCKET sock, Packet * pCmd)
+bool CNet::_addDataBuff(SOCKET sock, Packet * pCmd)
 {
 	if( sock == INVALID_SOCKET || !pCmd )
 		return false;
@@ -232,7 +225,7 @@ bool CNet::insertPacketBuff(SOCKET sock, Packet * pCmd)
 	return true;
 }
 
-Packet * CNet::removePacketBuff(SOCKET sock)
+Packet * CNet::_removeDataBuff(SOCKET sock)
 {
 	Packet * pCmd = NULL;
 	m_PacketLock.LOCK();
