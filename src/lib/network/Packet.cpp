@@ -52,7 +52,7 @@ void Packet::_recvData(char * buf, uint16 size)
 {
 	if( size <= 0 || _cpos + size > PACKET_BUFFER_SIZE )
 	{
-		LOGGER_ERROR("[Packet] Copy faild size=%d", size);
+		LOGGER_ERROR("copy faild size=%d", size);
 		return;
 	}
 	memcpy(data+_cpos, buf, size);
@@ -64,7 +64,7 @@ bool Packet::_crcCheck()
 	uint32_t crc = make_crc32(_dataBuffer(), _dataSize());
 
 	if (_crc() == crc ) return true;
-	else LOGGER_ERROR("[Packet] _crc():%d != crc:%d ", _crc(), crc);
+	else LOGGER_ERROR("_crc():%d != crc:%d ", _crc(), crc);
 	return false;
 }
 
@@ -213,7 +213,7 @@ void Packet::setBuffer(uint16 wType, const char* buf, uint16 size)
 	}
 	else
 	{
-		LOGGER_ERROR("[Packet] setBuffer failed, type:%d _wpos:%d size:%d", wType, _wpos, size);
+		LOGGER_ERROR("setBuffer failed, type:%d _wpos:%d size:%d", wType, _wpos, size);
 	}
 }
 
@@ -226,7 +226,7 @@ void Packet::getBuffer(std::string& buf)
 	}
 	else
 	{
-		LOGGER_ERROR("[Packet] getBuffer failed, _rpos:%d size:%d", _rpos, Size());
+		LOGGER_ERROR("getBuffer failed, _rpos:%d size:%d", _rpos, Size());
 	}
 }
 #endif
