@@ -34,8 +34,7 @@ bool CNet::startup(int type, int port, int connectmax, int sendbuffsize, int rec
 			m_Net = new CIOCP(this);
 		}
 		break;
-#endif
-#ifdef __linux__
+#elif defined __linux__
 	case NET_IO_EPOLL:
 		{
 			m_Net = new CIOEpoll(this);
@@ -45,6 +44,7 @@ bool CNet::startup(int type, int port, int connectmax, int sendbuffsize, int rec
 	default:
 		return false;
 	}
+	
 	if( !m_Net || !m_Net->Startup(port, connectmax, sendbuffsize, recvbuffsize) )
 		return false;
 
@@ -73,93 +73,44 @@ int CNet::sendMsg(SOCKET sock, Packet* pack)
 
 bool CNet::recv(SOCKET sock, char * data, int size)
 {
-	if( size <= 0 || !data )
-	{
-		LOGGER_ERROR("[CNet] Error:%s:%d", __FILE__, __LINE__);
+	if (size <= 0 || !data) {
+		LOGGER_ERROR("[CNet] socket:%d size:%d", sock, size);
 		return false;
 	}
 
-	bool bOldPacket = false;
-	bool bFinish = false;
+	int rsize = 0;
+	bool cached = false;
 
-	Packet * pCmd = _getDataBuff(sock);
-	if( pCmd )
-		bOldPacket = true;
-
-	int lsize = 0;
-	UINT nReadPtr = 0;
-	while( (lsize = size - nReadPtr) > 0 )
-	{
-		if( !pCmd )
-		{
-			//开始构建一个新的数据包
-			pCmd = new Packet;
-			if( !pCmd )
-			{
-				LOGGER_ERROR("[CNet] Error:%s:%d, new PACKET_COMMAN failed", __FILE__, __LINE__);
-				return false;
-			}
-
-			bFinish = false;
-		}
-		pCmd->SetNetID(sock);
-
-		int wsize = 0;
-		if( pCmd->GetHeadLeftSize() > 0 )	//包头未满，把包头写满
-		{
-			wsize = pCmd->GetHeadLeftSize() < lsize ? pCmd->GetHeadLeftSize() : lsize;
-		}
-		else if( pCmd->GetLeftSize() > 0 )	//包数据未满，把整个包写满
-		{
-			wsize = pCmd->GetLeftSize() < lsize ? pCmd->GetLeftSize() : lsize;
-		}
-
-		pCmd->recvData(data + nReadPtr, wsize);
-		nReadPtr += wsize;
+	while (size > 0) {
 		
-		if( pCmd->GetLeftSize() == 0 )		//已摘出一个完整包
-		{
-			//数据校验
-			if( !pCmd->crcCheck() )
-			{
-				LOGGER_ERROR("[CNet] crcCheck() sock=%d size=%d lsize=%d nReadPtr=%d failed", sock, size, lsize, nReadPtr);
-				_removeDataBuff(sock);
-				SAFE_DELETE(pCmd);
-				return false;
-			}
-			else
-			{
-				//设置其它参数
-				pCmd->SetNetID(sock);
-
-				//存入链表
-				handlePacket(pCmd);
-				updateRecvPacket(1);
-
-				//清空缓存
-				if( bOldPacket )
-				{
-					_removeDataBuff(sock);
-					bOldPacket = false;
-				}
-
-				pCmd = NULL;
-				bFinish = true;
-			}
-		} 
-		else if (pCmd->GetLeftSize() < 0) 
-		{
-			LOGGER_ERROR("[CNet] (pCmd->GetLeftSize() < 0 sock=%d", sock);
+		Packet * pCmd = _getDataBuff(sock);
+		if (pCmd) {
+			cached = true;
+		} else {
+			pCmd = new Packet;
+			pCmd->SetNetID(sock);
+			cached = false;
+		}
+	
+		rsize = pCmd->assemble(data+rsize, size-rsize);
+		if (rsize <= 0) {
 			_removeDataBuff(sock);
 			SAFE_DELETE(pCmd);
 			return false;
-	   }
-	}
+		} 
 
-	//当前数据包没有构建完整，缓存下来，等待下次网络数据
-	if( !bFinish )
-	{
-		_addDataBuff( sock, pCmd );
+		if (pCmd->isFull()) {
+			//存入链表
+			handlePacket(pCmd);
+			updateRecvPacket(1);
+
+			//清空缓存
+			if (cached) {
+				_removeDataBuff(sock);
+			}
+		} else {
+			_addDataBuff(sock, pCmd);
+		}
 	}
 	
 	return true;

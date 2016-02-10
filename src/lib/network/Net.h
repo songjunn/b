@@ -26,8 +26,8 @@ public:
 	virtual bool	startup(int type, int port, int connectmax, int sendbuffsize, int recvbuffsize, int packsize);
 	virtual void	terminate();
 	virtual bool	accept(SOCKET sock, const char * ip);
-	virtual int		send(SOCKET sock, char * data, int size);
 	virtual bool	recv(SOCKET sock, char * data, int size);
+	virtual int		send(SOCKET sock, char * data, int size);
 	virtual int		sendMsg(SOCKET sock, Packet* pack);
 	virtual void	close(SOCKET sock);
 	virtual bool	shutdown(SOCKET sock);

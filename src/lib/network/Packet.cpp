@@ -10,6 +10,44 @@ Packet::~Packet()
 {
 }
 
+int Packet::assemble(char * data, int size)
+{
+	int lsize = 0, rsize = 0, wsize = 0;
+
+	while ((lsize = size - rsize) > 0) {
+
+		if (GetHeadLeftSize() > 0)	//包头未满，把包头写满
+		{
+			wsize = GetHeadLeftSize() < lsize ? GetHeadLeftSize() : lsize;
+		}
+		else if (GetLeftSize() > 0)	//包数据未满，把整个包写满
+		{
+			wsize = GetLeftSize() < lsize ? GetLeftSize() : lsize;
+		}
+
+		recvData(data + rsize, wsize);
+		rsize += wsize; 
+		
+		if (GetLeftSize() == 0)		//已摘出一个完整包
+		{
+			if (!crcCheck())		//完整性校验
+			{
+				LOGGER_ERROR("crcCheck failed sock=%d size=%d lsize=%d rsize=%d", sock, size, lsize, rsize);
+				return 0;
+			} else {
+				return rsize;
+			}
+		} 
+		else if (GetLeftSize() < 0) 
+		{
+			LOGGER_ERROR("GetLeftSize() < 0 sock=%d", sock);
+			return 0;
+	   }
+	}
+
+	return rsize;
+}
+
 void Packet::recvData(char * buf, uint16 size)
 {
 	if( size <= 0 || _cpos + size > PACKET_BUFFER_SIZE )

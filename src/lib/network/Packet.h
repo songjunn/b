@@ -59,6 +59,7 @@ public:
 	inline int GetLeftSize() {return Size() - _cpos;}
 	inline int GetHeadLeftSize() {return DATA_PARAM - _cpos;}
 
+    int assemble(char * data, int& size);
 	void recvData(char * buf, uint16 size);
 	bool crcCheck();
 
