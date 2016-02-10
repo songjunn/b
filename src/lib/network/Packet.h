@@ -58,9 +58,7 @@ public:
 
 	inline bool isFull() {return _getLeftSize() == 0;}
 
-    int assemble(char * data, int& size);
-	void recvData(char * buf, uint16 size);
-	bool crcCheck();
+    int assemble(char * data, int size);
 
 #if USE_SHARED_PARSER
 	void put(int8 value);
@@ -112,6 +110,8 @@ private:
 	inline int _getHeadLeftSize() {return DATA_PARAM - _cpos;}
 
 	void setHeader(uint16 wType);
+	void recvData(char * buf, uint16 size);
+	bool crcCheck();
 
 #if USE_SHARED_PARSER
 	template <typename T> void append(T value);
