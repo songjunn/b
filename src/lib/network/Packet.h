@@ -56,8 +56,7 @@ public:
 	inline char * Data() {return data;}
 	inline uint16 Size() {return *(uint16*)(data + HEAD_SIZE);}
 
-	inline int GetLeftSize() {return Size() - _cpos;}
-	inline int GetHeadLeftSize() {return DATA_PARAM - _cpos;}
+	inline bool isFull() {return _getLeftSize() == 0;}
 
     int assemble(char * data, int& size);
 	void recvData(char * buf, uint16 size);
@@ -108,6 +107,9 @@ private:
 
 	inline uint32_t	_CRC() {return *(uint32_t*)(data + HEAD_CRC);}
 	inline void	_SetCRC(uint32_t CRC) {*(uint32_t*)(data + HEAD_CRC) = CRC;}
+
+	inline int _getLeftSize() {return Size() - _cpos;}
+	inline int _getHeadLeftSize() {return DATA_PARAM - _cpos;}
 
 	void setHeader(uint16 wType);
 

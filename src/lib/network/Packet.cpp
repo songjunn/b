@@ -16,19 +16,19 @@ int Packet::assemble(char * data, int size)
 
 	while ((lsize = size - rsize) > 0) {
 
-		if (GetHeadLeftSize() > 0)	//包头未满，把包头写满
+		if (_getHeadLeftSize() > 0)	//包头未满，把包头写满
 		{
-			wsize = GetHeadLeftSize() < lsize ? GetHeadLeftSize() : lsize;
+			wsize = _getHeadLeftSize() < lsize ? _getHeadLeftSize() : lsize;
 		}
-		else if (GetLeftSize() > 0)	//包数据未满，把整个包写满
+		else if (_getLeftSize() > 0)	//包数据未满，把整个包写满
 		{
-			wsize = GetLeftSize() < lsize ? GetLeftSize() : lsize;
+			wsize = _getLeftSize() < lsize ? _getLeftSize() : lsize;
 		}
 
 		recvData(data + rsize, wsize);
 		rsize += wsize; 
 		
-		if (GetLeftSize() == 0)		//已摘出一个完整包
+		if (_getLeftSize() == 0)		//已摘出一个完整包
 		{
 			if (!crcCheck())		//完整性校验
 			{
@@ -38,9 +38,9 @@ int Packet::assemble(char * data, int size)
 				return rsize;
 			}
 		} 
-		else if (GetLeftSize() < 0) 
+		else if (_getLeftSize() < 0) 
 		{
-			LOGGER_ERROR("GetLeftSize() < 0 sock=%d", sock);
+			LOGGER_ERROR("_getLeftSize() < 0 sock=%d", sock);
 			return 0;
 	   }
 	}
