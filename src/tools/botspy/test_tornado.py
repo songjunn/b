@@ -39,15 +39,12 @@ class TCPClient(object):
         logging.info("Shutdown stream...")
         self._stream.close()
 
-    def sendData(self, args):
-        data = args[0]
+    def sendData(self, data):
         logging.debug("Send: %s", data)
         self._stream.write(data)
 
     def on_connect(self):
         logging.info("Connect success...")
-        #self.looper(1, self.sendData, "hello")
-        #self._looper.call_later(1, self.sendData, "hello")
 
     def on_close(self):
         logging.info("Close stream...")
@@ -56,15 +53,31 @@ class TCPClient(object):
         logging.debug("Received: %s", data)
         self._stream.close()
 
+__client_status__ = ['None', 'Connected', 'Online', 'Offline']
+
 class Bots(TCPClient):
     def __init__(self, name):
         self._name = name
+        self._status = __client_status__[0]
 
     def looper(self, time, func, *args, **kwargs):
         self._looper.call_later(time, func, args)
 
+    def on_connect(self):
+        TCPClient.on_connect(self)
+        self._status = __client_status__[1]
+        self.start_test()
+
+    def on_close(self):
+        TCPClient.on_close(self)
+        self._status = __client_status__[3]
+
+    def start_test(self):
+        self.test_sendData()
+
     def test_sendData(self):
-        self.looper(1, self.sendData, "hello")
+        self.sendData("hello python")
+        self.looper(2, self.test_sendData)
 
 def init_logging():
     logger = logging.getLogger()
@@ -81,8 +94,9 @@ def main():
     #threads = [gevent.spawn(createBots, i) for i in xrange(2)]
     #gevent.joinall(threads)
     for i in xrange(2):
-        bots = TCPClient()
+        bots = Bots(i)
         bots.connect("192.168.6.47", 20900, net.getLooper())
+        bots.connect("221.228.207.92", 20900, net.getLooper())
     net.start()
 
 if __name__ == "__main__":
