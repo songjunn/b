@@ -4,9 +4,9 @@ import socket
 import threading
 import tornado.ioloop
 import tornado.iostream
-import gevent
-import gevent.monkey
-gevent.monkey.patch_all()
+#import gevent
+#import gevent.monkey
+#gevent.monkey.patch_all()
 
 class Network(object):
     def __init__(self):
@@ -60,8 +60,8 @@ class Bots(TCPClient):
         self._name = name
         self._status = __client_status__[0]
 
-    def looper(self, time, func, *args, **kwargs):
-        self._looper.call_later(time, func, args)
+    def looper(self, time, func):
+        self._looper.call_later(time, func)
 
     def on_connect(self):
         TCPClient.on_connect(self)

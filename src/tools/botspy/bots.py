@@ -1,49 +1,64 @@
-# coding: utf-8
-import threading
-import message
-from twisted.internet import reactor, protocol
+# -*- coding: utf-8 -*-
+import logging
+import network
+# import gevent
+# import gevent.monkey
+# gevent.monkey.patch_all()
 
-class NetClient(protocol.Protocol):   
-    def connectionMade(self):
-    	print "connection made."
-        #self.transport.write("hello, world!")
-    
-    def dataReceived(self, data):
-        "As soon as any data is received, write it back."
-        print "Received:", data
-        self.transport.loseConnection()
-    
-    def connectionLost(self, reason):
-        print "connection lost:", reason
+__client_status__ = ['None', 'Connected', 'Online', 'Offline']
 
-class NetFactory(protocol.ClientFactory):
-    protocol = NetClient
 
-    def startedConnecting(self, connector):
-    	print "Connection created."
+class Bots(network.TCPClient):
+    def __init__(self, name):
+        self._name = name
+        self._status = __client_status__[0]
 
-    def clientConnectionFailed(self, connector, reason):
-        print "Connection failed:", reason
-        reactor.stop()
-    
-    def clientConnectionLost(self, connector, reason):
-        print "Connection lost:", reason
-        reactor.stop()
+    def looper(self, time, func):
+        self._looper.call_later(time, func)
 
-class Bots():
-    def startNetwork(self, ip, port):
-        reactor.connectTCP(ip, port, NetFactory())
-        reactor.run()
+    def on_connect(self):
+        network.TCPClient.on_connect(self)
+        self._status = __client_status__[1]
+        self.start_test()
 
-    def startTestPressure(self):
-   		while (True):
-   			count = 1
+    def on_close(self):
+        network.TCPClient.on_close(self)
+        self._status = __client_status__[3]
 
-# this connects the protocol to a server running on port
+    def start_test(self):
+        self.test_sendData()
+
+    def test_sendData(self):
+        self.sendData("hello python")
+        self.looper(2, self.test_sendData)
+
+
+def init_logging():
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+    sh = logging.StreamHandler()
+    formatter = logging.Formatter(
+        '%(asctime)s %(module)s-L%(lineno)d-%(levelname)s: %(message)s')
+    sh.setFormatter(formatter)
+    logger.addHandler(sh)
+    logging.info(
+        "set logging level: %s", logging.getLevelName(logger.getEffectiveLevel()))
+
+
 def main():
-    bots = Bots()
-    bots.startNetwork("192.168.6.47", 20900)
+    init_logging()
+    net = network.Network()
+    # threads = [gevent.spawn(createBots, i) for i in xrange(2)]
+    # gevent.joinall(threads)
+    for i in xrange(2):
+        bots = Bots(i)
+        bots.connect("192.168.6.47", 20900, net.getLooper())
+        bots.connect("221.228.207.92", 20900, net.getLooper())
+    net.start()
 
-# this only runs if the module was *not* imported
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception, ex:
+        print "Ocurred Exception: %s" % str(ex)
+        quit()
