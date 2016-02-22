@@ -81,7 +81,7 @@ bool CNet::recv(SOCKET sock, char * data, int size)
 	int rsize = 0;
 	bool cached = false;
 
-	while (size > 0) {
+	while (size - rsize > 0) {
 		
 		Packet * pCmd = _getDataBuff(sock);
 		if (pCmd) {

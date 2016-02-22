@@ -387,6 +387,8 @@ void CIOEpoll::_AcceptAllConnections()
 
 			m_pNet->updateConnectingNum(1);
 
+			LNOTICE("Accept Socket %d, %s", s->m_socket, s->m_szIP);
+
 			if( !m_pNet->accept(s->m_socket, s->m_szIP) )
 			{
 				LERROR("m_pNet->Accept(%d) failed, ip:%s", s->m_socket, s->m_szIP);
@@ -396,8 +398,6 @@ void CIOEpoll::_AcceptAllConnections()
 
 			_epoll_ctl(read_fd, EPOLL_CTL_ADD, s->m_socket, EPOLLIN );
 			_epoll_ctl(write_fd, EPOLL_CTL_ADD, s->m_socket, EPOLLOUT );
-
-			LNOTICE("Accept Socket %d, %s", s->m_socket, s->m_szIP);
 		} 
 		else
 		{
