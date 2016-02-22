@@ -119,7 +119,7 @@ bool CGateServer::onMessage(Packet* pack)
 			UserMgr.OnMsg(pack);
 			return true;
 		case Message::MSG_SERVER_NET_RESPONE:
-			GETCLIENTNET(this)->sendMsg(pack->sock, pack);
+			GETCLIENTNET(this)->sendMsg(pack->GetNetID(), pack);
 			break;
 		default:
 			break;

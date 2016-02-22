@@ -61,6 +61,8 @@ void Packet::_recvData(char * buf, uint16 size)
 
 bool Packet::_crcCheck()
 {
+        return true;
+
 	uint32_t crc = make_crc32(_dataBuffer(), _dataSize());
 
 	if (_crc() == crc ) return true;
