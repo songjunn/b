@@ -29,8 +29,8 @@ class Bots(network.TCPClient):
         self.test_sendData()
 
     def test_sendData(self):
-        self.sendData(15, "hello python")
-        self.looper(0.5, self.test_sendData)
+        self.sendData(9, "hello python")
+        #self.looper(0.5, self.test_sendData)
 
 
 def init_logging():
