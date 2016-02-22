@@ -29,8 +29,8 @@ class Bots(network.TCPClient):
         self.test_sendData()
 
     def test_sendData(self):
-        self.sendData("hello python")
-        self.looper(2, self.test_sendData)
+        self.sendData(15, "hello python")
+        self.looper(0.5, self.test_sendData)
 
 
 def init_logging():
@@ -42,7 +42,7 @@ def init_logging():
     sh.setFormatter(formatter)
     logger.addHandler(sh)
     logging.info(
-        "set logging level: %s", logging.getLevelName(logger.getEffectiveLevel()))
+        "Set logging level: %s", logging.getLevelName(logger.getEffectiveLevel()))
 
 
 def main():
@@ -50,9 +50,8 @@ def main():
     net = network.Network()
     # threads = [gevent.spawn(createBots, i) for i in xrange(2)]
     # gevent.joinall(threads)
-    for i in xrange(2):
+    for i in xrange(1):
         bots = Bots(i)
-        bots.connect("192.168.6.47", 20900, net.getLooper())
         bots.connect("221.228.207.92", 20900, net.getLooper())
     net.start()
 

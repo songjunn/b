@@ -3,6 +3,7 @@ import logging
 import socket
 import tornado.ioloop
 import tornado.iostream
+import protocol
 
 
 class Network(object):
@@ -10,11 +11,11 @@ class Network(object):
         self._ioloop = tornado.ioloop.IOLoop.instance()
 
     def start(self):
-        logging.info("start network...")
+        logging.info("Start network...")
         self._ioloop.start()
 
     def stop(self):
-        logging.info("stop network...")
+        logging.info("Stop network...")
         self._ioloop.stop()
 
     def getLooper(self):
@@ -37,9 +38,11 @@ class TCPClient(object):
         logging.info("Shutdown stream...")
         self._stream.close()
 
-    def sendData(self, data):
-        logging.debug("Send: %s", data)
-        self._stream.write(data)
+    def sendData(self, type, data):
+        message = protocol.Protocol()
+        buffer = message.package(type, data)
+        self._stream.write(buffer)
+        logging.debug("Send message %d size %d: %s", type, len(buffer), data)
 
     def on_connect(self):
         logging.info("Connect success...")

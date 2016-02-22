@@ -11,6 +11,7 @@ enum MsgDefine {
     MSG_SERVER_NET_ACCEPT = 6;          // net -> server :create socket
     MSG_SERVER_NET_CLOSE = 7;           // net -> server :close socket
     MSG_SERVER_NET_CONNECT = 8;         // net -> server :connect sync return
+    MSG_SERVER_NET_RESPONE = 9;         // net test response
 	
     MSG_COMMON_ERROR = 100;             //发送错误码
     MSG_COMMON_EVENT = 101;             //同步游戏事件

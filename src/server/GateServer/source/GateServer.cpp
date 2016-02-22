@@ -118,6 +118,9 @@ bool CGateServer::onMessage(Packet* pack)
 			CBaseServer::onMessage(pack);
 			UserMgr.OnMsg(pack);
 			return true;
+		case Message::MSG_SERVER_NET_RESPONE:
+			GETCLIENTNET(this)->sendMsg(pack->sock, pack);
+			break;
 		default:
 			break;
     }
