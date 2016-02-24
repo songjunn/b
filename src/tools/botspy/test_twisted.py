@@ -2,32 +2,59 @@
 import logging
 import threading
 import protocolpack
-from twisted.internet import reactor, protocol
+from twisted.internet import reactor, protocol, task
+from twisted.internet.protocol import ClientCreator
 
-class NetClient(protocol.Protocol):   
+class NetClient(protocol.Protocol):
     def connectionMade(self):
-    	print "connection made."
-        self.sendData(9, "hello python")
-    
-    def dataReceived(self, data):
-        "As soon as any data is received, write it back."
-        print "Received:", data
-        # self.transport.loseConnection()
+    	print "Connection made."
     
     def connectionLost(self, reason):
-        print "connection lost:", reason
+        print "Connection lost:", reason
+
+    def dataReceived(self, data):
+        print "Received..."
 
     def sendData(self, type, data):
         message = protocolpack.Protocol()
         buffer = message.package(type, data)
-        self.transport.write(buffer)
+        #self.transport.write(buffer)
         logging.debug("Send message %d size %d: %s", type, len(buffer), data)
+
+    def shutdown(self):
+        self.transport.loseConnection()
+
+class Bots(NetClient):
+    def __init__(self):
+        self._id = 0
+
+    def setID(self, id):
+        self._id = id
+        print "I'm bots %d" % self._id
+
+    def startNetwork(self, ip, port):
+        #reactor.connectTCP(ip, port, NetFactory())
+        c = ClientCreator(reactor, Bots)
+        net = c.connectTCP(ip, port)
+        net.addCallback(self.schedule, 1, self.test_send)
+
+    def connectionMade(self):
+        NetClient.connectionMade(self)
+        #self.schedule(1, self.test_send)
+
+    def schedule(self, fileObj, timer, func):
+        call = task.LoopingCall(func)
+        call.start(timer)
+
+    def test_send(self):
+        data = "hello python! I'm bots %d" % self._id
+        self.sendData(9, data)
 
 class NetFactory(protocol.ClientFactory):
     protocol = NetClient
 
     def startedConnecting(self, connector):
-    	print "Connection created."
+        print "Connection created."
 
     def clientConnectionFailed(self, connector, reason):
         print "Connection failed:", reason
@@ -36,15 +63,6 @@ class NetFactory(protocol.ClientFactory):
     def clientConnectionLost(self, connector, reason):
         print "Connection lost:", reason
         reactor.stop()
-
-class Bots():
-    def startNetwork(self, ip, port):
-        reactor.connectTCP(ip, port, NetFactory())
-        reactor.run()
-
-    def startTestPressure(self):
-   		while (True):
-   			count = 1
 
 def init_logging():
     logger = logging.getLogger()
@@ -59,8 +77,12 @@ def init_logging():
 
 # this connects the protocol to a server running on port
 def main():
-    bots = Bots()
-    bots.startNetwork("221.228.207.92", 20900)
+    init_logging()
+    for i in xrange(1,3):
+        bots = Bots()
+        bots.setID(i)
+        bots.startNetwork("221.228.207.92", 20900)
+    reactor.run()
 
 # this only runs if the module was *not* imported
 if __name__ == '__main__':
