@@ -42,6 +42,11 @@ class TCPClient(object):
     def sendData(self, data):
         logging.debug("Send: %s", data)
         self._stream.write(data)
+        
+        message = protocol.Protocol()
+        buffer = message.package(type, data)
+        self._stream.write(buffer)
+        logging.debug("Send message %d size %d: %s", type, len(buffer), data)
 
     def on_connect(self):
         logging.info("Connect success...")
@@ -51,7 +56,7 @@ class TCPClient(object):
 
     def on_receive(self, data):
         logging.debug("Received: %s", data)
-        self._stream.close()
+        #self._stream.close()
 
 __client_status__ = ['None', 'Connected', 'Online', 'Offline']
 
@@ -65,18 +70,20 @@ class Bots(TCPClient):
 
     def on_connect(self):
         TCPClient.on_connect(self)
+        self._stream.read_bytes(16, self.on_receive)
         self._status = __client_status__[1]
-        self.start_test()
+        self.test_sendData()
 
     def on_close(self):
         TCPClient.on_close(self)
         self._status = __client_status__[3]
 
-    def start_test(self):
-        self.test_sendData()
+    def on_receive(self, data):
+        logging.debug("Received: %s", data)
 
     def test_sendData(self):
-        self.sendData("hello python")
+        data = "hello python! I'm bots %d" % self._name
+        self.sendData(9, data)
         self.looper(2, self.test_sendData)
 
 def init_logging():
@@ -95,7 +102,6 @@ def main():
     #gevent.joinall(threads)
     for i in xrange(2):
         bots = Bots(i)
-        bots.connect("192.168.6.47", 20900, net.getLooper())
         bots.connect("221.228.207.92", 20900, net.getLooper())
     net.start()
 

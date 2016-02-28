@@ -19,18 +19,16 @@ class Bots(network.TCPClient):
     def on_connect(self):
         network.TCPClient.on_connect(self)
         self._status = __client_status__[1]
-        self.start_test()
+        self.test_sendData()
 
     def on_close(self):
         network.TCPClient.on_close(self)
         self._status = __client_status__[3]
 
-    def start_test(self):
-        self.test_sendData()
-
     def test_sendData(self):
-        self.sendData(9, "hello python")
-        #self.looper(0.5, self.test_sendData)
+        data = "hello python! I'm bots %d" % self._name
+        self.sendData(9, data)
+        #self.looper(2, self.test_sendData)
 
 
 def init_logging():
@@ -50,7 +48,7 @@ def main():
     net = network.Network()
     # threads = [gevent.spawn(createBots, i) for i in xrange(2)]
     # gevent.joinall(threads)
-    for i in xrange(1):
+    for i in xrange(2):
         bots = Bots(i)
         bots.connect("221.228.207.92", 20900, net.getLooper())
     net.start()
