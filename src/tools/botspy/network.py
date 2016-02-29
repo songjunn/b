@@ -1,58 +1,70 @@
 # -*- coding: utf-8 -*-
 import logging
-import socket
-import tornado.ioloop
-import tornado.iostream
 import protocol
+from gevent.queue import Queue
+from gevent.socket import socket
+import gevent.monkey
+gevent.monkey.patch_all()
 
 
-class Network(object):
+class NetClient(object):
     def __init__(self):
-        self._ioloop = tornado.ioloop.IOLoop.instance()
+        self._sockfd = None
+        self._recvbuff = ""
+        self._sendqueue = Queue()
+        self._work = False
 
-    def start(self):
-        logging.info("Start network...")
-        self._ioloop.start()
-
-    def stop(self):
-        logging.info("Stop network...")
-        self._ioloop.stop()
-
-    def getLooper(self):
-        return self._ioloop
-
-
-class TCPClient(object):
-    def __init__(self):
-        self._stream = None
-        self._looper = None
-
-    def connect(self, host, port, looper):
-        self._looper = looper
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-        self._stream = tornado.iostream.IOStream(sock)
-        self._stream.set_close_callback(self.on_close)
-        self._stream.connect((host, port), self.on_connect)
+    def connect(self, host, port):
+        self._work = True
+        self._sockfd = gevent.socket.socket()
+        self._sockfd.connect((host, port))
+        self.connect_cb()
+        gevent.spawn(self._writer)
+        gevent.spawn(self._reader)
 
     def shutdown(self):
-        logging.info("Shutdown stream...")
-        self._stream.close()
+        self._work = False
+        self._sockfd.close()
+        self.shutdown_cb()
 
     def sendData(self, type, data):
         message = protocol.Protocol()
         buffer = message.package(type, data)
-        self._stream.write(buffer)
+        self._sendqueue.put(buffer)
         logging.debug("Send message %d size %d: %s", type, len(buffer), data)
-        self._stream.read_bytes(1024, self.on_receive, streaming_callback=self.on_receive_stream, partial=True)
 
-    def on_connect(self):
-        logging.info("Connect success...")
+    def recvData(self, data):
+        self._recvbuff += data
+        proto = protocol.Protocol()
+        if proto.unpackage(self._recvbuff) == True:
+            self._recvbuff = self._recvbuff[proto.size():len(self._recvbuff)]
+        logging.debug(
+            "Recv message %d size %d: %s", proto.type(), proto.size(), proto.data())
+        self.receive_cb(proto)
 
-    def on_close(self):
-        logging.info("Close stream...")
+    def connect_cb(self):
+        pass
 
-    def on_receive(self, data):
-        logging.debug("Received: %s", data)
+    def shutdown_cb(self):
+        pass
 
-    def on_receive_stream(self, data):
-        logging.debug("Received stream: %s", data)
+    def receive_cb(self, message):
+        pass
+
+    def _reader(self):
+        while self._work:
+            data = self._sockfd.recv(1024)
+            if not data:
+                self.shutdown()
+            else:
+                logging.debug("Recv size %d", len(data))
+                self.recvData(data)
+            gevent.sleep(1)
+
+    def _writer(self):
+        while self._work:
+            if not self._sendqueue.empty():
+                data = self._sendqueue.get()
+                self._sockfd.sendall(data)
+                logging.debug("Send size %d", len(data))
+            gevent.sleep(1)

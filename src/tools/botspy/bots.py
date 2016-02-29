@@ -1,34 +1,42 @@
 # -*- coding: utf-8 -*-
 import logging
 import network
-# import gevent
-# import gevent.monkey
-# gevent.monkey.patch_all()
+import gevent.monkey
+from threading import Timer
+import time
+gevent.monkey.patch_all()
 
 __client_status__ = ['None', 'Connected', 'Online', 'Offline']
 
 
-class Bots(network.TCPClient):
-    def __init__(self, name):
-        self._name = name
+class Bots(network.NetClient):
+    def __init__(self, id):
+        super(Bots, self).__init__()
+        self._id = id
         self._status = __client_status__[0]
 
-    def looper(self, time, func):
-        self._looper.call_later(time, func)
-
-    def on_connect(self):
-        network.TCPClient.on_connect(self)
+    def connect_cb(self):
+        logging.info("Bots %d connect success...", self._id)
         self._status = __client_status__[1]
-        self.test_sendData()
+        self.schedule(1, self.test_sendData)
 
-    def on_close(self):
-        network.TCPClient.on_close(self)
+    def shutdown_cb(self):
+        logging.info("Bots %d shutdown...", self._id)
         self._status = __client_status__[3]
 
+    def receive_cb(self, message):
+        pass
+
+    def schedule(self, interval, func):
+        def looper():
+            while True:
+                func()
+                gevent.sleep(interval)
+        gevent.spawn(looper)
+
     def test_sendData(self):
-        data = "hello python! I'm bots %d" % self._name
+        data = "hello python! I'm bots %d" % self._id
         self.sendData(9, data)
-        #self.looper(2, self.test_sendData)
 
 
 def init_logging():
@@ -45,17 +53,20 @@ def init_logging():
 
 def main():
     init_logging()
-    net = network.Network()
-    # threads = [gevent.spawn(createBots, i) for i in xrange(2)]
-    # gevent.joinall(threads)
-    for i in xrange(2):
+
+    def createBots(i, addr, port):
         bots = Bots(i)
-        bots.connect("221.228.207.92", 20900, net.getLooper())
-    net.start()
+        bots.connect(addr, port)
+    threads = [
+        gevent.spawn(createBots, i, "221.228.207.92", 20900) for i in xrange(2)]
+    gevent.joinall(threads)
+
+    while True:
+        gevent.sleep(60)
 
 if __name__ == "__main__":
     try:
         main()
     except Exception, ex:
-        print "Ocurred Exception: %s" % str(ex)
+        logging.debug("Ocurred Exception: %s" % str(ex))
         quit()
