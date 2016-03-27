@@ -2,7 +2,6 @@
 #define _PLUGIN_H_
 
 class CBaseServer;
-class CPluginHandler;
 class CPlugin
 {
 public:
@@ -12,17 +11,12 @@ public:
 	virtual bool startup() { return false; }
 	virtual bool exit() { return false; }
 
-	void setHandler(CPluginHandler* handler) {
-		m_handler = handler;
-	}
-
 	void setServer(CBaseServer* server) {
 		m_server = server;
 	}
 
 protected:
 	CBaseServer* m_server;
-	CPluginHandler* m_handler;
 
 };
 

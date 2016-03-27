@@ -13,7 +13,7 @@
 
 CBaseServer::CBaseServer()
 {
-	m_ServerState = EStateRunning;
+  m_ServerState = EStateRunning;
 
 	SetDefLessFunc(m_linkerMap);
 }
