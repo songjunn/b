@@ -26,7 +26,7 @@ MACRO(ODIN_BUILD_OPTION)
   	set(CMAKE_C_COMPILER g++)
   	
     set(PROJECT_CFLAGS "${PROJECT_CFLAGS} -fPIC -O0 -Wall -g -ggdb -m64 -ansi -D_X64")
-    set(PROJECT_CXXFLAGS "${PROJECT_CFLAGS}  -Wdeprecated-declarations")
+    set(PROJECT_CXXFLAGS "${PROJECT_CFLAGS}  -Wno-deprecated-declarations -Wno-unused-function")
     set(PROJECT_LINKFLAGS "${PROJECT_LINKFLAGS} -Wl,--no-undefined -Wl,--as-needed")
 
     set(PROJECT_DEBUG_CFLAGS "-D_DEBUG -DDEBUG")
