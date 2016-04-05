@@ -44,7 +44,6 @@ char g_szExePath[512];
 
 CGameServer::CGameServer()
 {
-	setType(CBaseServer::Linker_Server_Game);
 }
 
 CGameServer::~CGameServer()
@@ -125,7 +124,7 @@ bool CGameServer::onStartup(string logconf, string logfile)
 	//³õÊ¼»¯
 	char mpath[1024] = { 0 };
 	sprintf(mpath, "%s//FPS_%d.sock", udPath, myid);
-	this->initSelf(worldID, CBaseServer::Linker_Server_Game, myid, myport, myip, 0, NULL, mpath);
+	this->initialize(worldID, CBaseServer::Linker_Server_Game, myid, myport, myip, 0, NULL, mpath);
 
 	CNetwork* servernet = (CNetwork *)this->createPlugin(CBaseServer::Plugin_Net4Server);
 	if (!servernet->startup(CNet::NET_IO_SELECT, myport, connmax, sendsize, recvsize, packsize)) {

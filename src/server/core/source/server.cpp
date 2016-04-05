@@ -161,12 +161,7 @@ void CBaseServer::onShutdown()
 #endif
 }
 
-void CBaseServer::setType(int type)
-{
-	m_self.m_type = type;
-}
-
-void CBaseServer::initSelf(int world, int type, int id, int port, const char* szip, int extport, const char* extip, const char* udPath)
+void CBaseServer::initialize(int world, int type, int id, int port, const char* szip, int extport, const char* extip, const char* udPath)
 {
 	m_self.m_worldID = world;
 	m_self.m_type = type;

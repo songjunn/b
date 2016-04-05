@@ -11,7 +11,6 @@ createFileSingleton(CLoginServer);
 
 CLoginServer::CLoginServer()
 {
-    setType(CBaseServer::Linker_Server_Login);
 }
 
 CLoginServer::~CLoginServer()

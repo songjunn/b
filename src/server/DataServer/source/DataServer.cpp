@@ -17,7 +17,6 @@ createFileSingleton(CLoadModule);
 
 CDataServer::CDataServer()
 {
-	setType(CBaseServer::Linker_Server_Data);
 }
 
 CDataServer::~CDataServer()
@@ -63,7 +62,7 @@ bool CDataServer::onStartup(string logconf, string logfile)
 	//³õÊ¼»¯
 	char mpath[1024] = { 0 };
 	sprintf(mpath, "%s//FPS_%d.sock", udPath, myid);
-	this->initSelf(worldID, CBaseServer::Linker_Server_Data, myid, myport, myip, 0, NULL, mpath);
+	this->initialize(worldID, CBaseServer::Linker_Server_Data, myid, myport, myip, 0, NULL, mpath);
 
 	CMongoDB* db = (CMongoDB *)this->createPlugin(CBaseServer::Plugin_Mongodb);
 	if (!db->startup(gamedbip, gamedbport, gamedbname)) {
